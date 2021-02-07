@@ -3,7 +3,17 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  logo: '../../assets/img/boda-logo.png',
+  csvFile: '../../assets/files/customer tempate.csv',
+  vnPath: '/assets/media',
+  env: 'lo',
+  api: `http://localhost:10484/api-z/`,
+  // api: `https://smartcity.bodacommunity.io:10441/api-z/`,
+  // api_1: `http://10.0.0.172:9090/api-1/`
+  api_1: `https://smartcityapi.bodacommunity.io:8080/api-1/`,
+  newUrl: `http://localhost:10484`,
+  // api_1: `https://2f0a050f.ngrok.io/`
 };
 
 /*
