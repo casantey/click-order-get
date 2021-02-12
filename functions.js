@@ -10,6 +10,8 @@ module.exports = {
 	},
 	getDateToday: function(type) {
 		let today = new Date();
+		let hh = today.getHours().toString().padStart(2, "0");
+		let mms = today.getMilliseconds().toString().padStart(3, "0");
 		var dd = String(today.getDate()).padStart(2, "0");
 		var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
 		var yyyy = today.getFullYear();
@@ -20,6 +22,8 @@ module.exports = {
 		let dateToday = dd + "_" + mm + "_" + yyyy;
 		let time = today.getHours() + ":" + m + ":" + ss + " " + dayNight;
 		let t = today.getHours() + "_" + m + "_" + ss + "_" + dayNight;
+		let dateID = dd + mm + yyyy;
+		let dID = yyyy + mm + dd + hh + m + ss + mms;
 		switch (type) {
 			case "DATE":
 				return dateToday;
@@ -29,6 +33,10 @@ module.exports = {
 				break;
 			case "TIME_ALT":
 				return t;
+			case "ID":
+				return dateID;
+			case "FULL-ID":
+				return dID;
 				break;
 			default:
 				return dateToday + " at " + time;

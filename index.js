@@ -5,6 +5,9 @@ const bodyParser = require("body-parser");
 const chalk = require("chalk");
 const path = require("path");
 const fs = require("fs");
+const jwt = require("jsonwebtoken");
+const dbConn = require("./dbConn");
+const config = require("./config/config.json");
 const {saveError, getDateToday, verifyToken} = require("./functions");
 
 const tempX = multer.diskStorage({
@@ -42,6 +45,7 @@ var router = express.Router();
 route.use("/orders", require("./routes/order"));
 route.use("/menu", require("./routes/menu"));
 route.use("/institution", require("./routes/inst"));
+route.use("/user", require("./routes/user"));
 
 route.get("/", verifyToken, (req, res) => {
 	res.send("<h1 class='text-center' style='font-family: Montserrat;'>" + rootMsg[0]["message"] + "</h1>");
@@ -117,10 +121,11 @@ route.get("/api-z/order/:id", (req, res) => {
 route.post("/api-z/order", (req, res) => {
 	let bod = req.body;
 	dbConn.query(
-		`INSERT INTO orders (orderNo,orderSource,phone,name,email,itemCategory,itemName,itemPrice,itemFlavors,item_quantity,deliveryAddress,orderLong,orderLat,clientReference,institution,dateCreated) VALUES
-		(TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),NOW())`,
+		`INSERT INTO orders (orderNo,orderSource,phone,name,email,itemCategory,itemName,itemPrice,itemFlavors,item_quantity,deliveryAddress,orderLong,orderLat,clientReference,institution,delivery_price,orderStatus,itemFlavorsQty,dateCreated) VALUES
+		(TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),NOW())`,
 		[
-			bod.orderNo,
+			// bod.orderNo,
+			bod.orderStatusId === 7 ? func.getDateToday("FULL-ID") : bod.orderNo,
 			bod.orderSource,
 			bod.phone,
 			bod.name,
@@ -129,17 +134,20 @@ route.post("/api-z/order", (req, res) => {
 			bod.itemName,
 			bod.itemPrice,
 			bod.itemFlavors,
-			bod.item_quantity,
+			bod.itemQuantity,
 			bod.deliveryAddress,
 			bod.orderLong,
 			bod.orderLat,
+			bod.clientReference,
 			bod.institution,
-			bod.clientReference
+			bod.delivery_price,
+			bod.orderStatusId,
+			bod.itemFlavorsQty
 		],
 		(error, rows) => {
 			if (error) {
 				// WHEN THERE IS AN ERROR
-				functions.saveError(error);
+				func.saveError(error);
 				return res.send(error);
 			}
 			// WHEN THERE IS NO ERROR
@@ -605,72 +613,6 @@ route.get("/api-z/getInstHead", verifyToken, (req, res) => {
 		res.send(rows);
 	});
 });
-
-/** AUTHENTICATE WEB USER */
-route.post("/api-z/authenticateWebUser", (req, res) => {
-	// console.log(req.headers["x-forwarded-for"]);
-	// console.log(req.connection.remoteAddress);
-	const ip =
-		(req.headers["x-forwarded-for"] || "").split(",").pop().trim() ||
-		req.connection.remoteAddress ||
-		req.socket.remoteAddress ||
-		req.connection.socket.remoteAddress;
-	// console.log({ip});
-	dbConn.query(
-		`SELECT a.Username username, a.Fullname fullname, b.inst_head, c.InstitutionName inst_head_name, b.InstitutionCode instCode, b.districtcapital instLoc, a.UserType userType, a.InstitutionName institutionName, b.Country country, b.is_head, b.Category FROM web_user a INNER JOIN institution b ON a.InstitutionName=b.InstitutionName LEFT JOIN institution c ON b.inst_head=c.InstitutionCode WHERE a.Username=TRIM(?) AND a.Password=TRIM(?)`,
-		[ req.body.username, req.body.password ],
-		(error, rows) => {
-			if (!error) {
-				// WHEN THERE IS NO ERROR
-				// console.log(rows);
-				if (rows.length === 0) return res.send(null);
-				let r = rows[0];
-				let payload = {
-					username: r.username,
-					fullname: r.fullname,
-					userType: r.userType,
-					institutionName: r.institutionName,
-					country: r.country,
-					is_head: r.is_head,
-					Category: r.Category,
-					instCode: r.instCode,
-					instLoc: r.instLoc,
-					inst_head: r.inst_head,
-					inst_head_name: r.inst_head_name
-				};
-				// console.log(payload);
-				let token = jwt.sign(payload, jwtKey, {algorithm: "HS384"});
-				// console.log({token});
-				const d = {
-					...payload,
-					token
-				};
-				// STORE LOG DATA
-				// console.log(d);
-				dbConn.query(
-					`INSERT INTO web_logins (username,ip_add,inst_code,log_date,access_token) VALUES (TRIM(?),TRIM(?),TRIM(?), NOW(),TRIM(?))`,
-					[ d.username, ip, d.instCode, d.token ],
-					(error, rows) => {
-						if (!error) {
-							// WHEN THERE IS NO ERROR
-							res.send(d);
-						}
-						else {
-							// WHEN THERE IS AN ERROR
-							saveError(error);
-							res.send(error);
-						}
-					}
-				);
-			}
-			else {
-				// WHEN THERE IS AN ERROR
-				saveError(error);
-				res.send(error);
-			}
-		}
-	);
-}); // END METHOD
 
 route.get("/api-z/order/all/today", (req, res) => {
 	// console.log("here");
