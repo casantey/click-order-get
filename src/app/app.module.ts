@@ -15,13 +15,19 @@ import { AgmCoreModule } from '@agm/core';
 import { ToastrModule } from 'ngx-toastr';
 import { TokenInterceptorService } from './util/service/token-interceptor.service';
 import { AuthService } from './util/service/auth.service';
+import { LoginComponent } from './views/main/login/login.component';
+import { FooterComponent } from './views/main/footer/footer.component';
+import { NavComponent } from './views/main/nav/nav.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, LoginComponent, FooterComponent, NavComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
     MaterialUiModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -38,6 +44,7 @@ import { AuthService } from './util/service/auth.service';
   ],
   providers: [
     AuthService,
+    LoginComponent,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptorService,

@@ -1,0 +1,44 @@
+section{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+img{
+  margin: 0 2rem;
+}
+mat-icon{
+  color: #3d3d3d;
+}
+mat-card-content{
+  padding-top: 1rem;
+}
+button{
+  width: 50%;;
+}
+#caption{
+  margin-top: 3rem;
+}
+#login{
+  display: flex;
+  justify-content: center;
+}
+.login-card{
+  // height: 400px;
+  width: 450px;
+}
+.caption-head{
+  font-weight: 400;
+  margin-bottom: 0;
+}
+.caption-body,
+.version{
+  font-weight: 500;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  margin-bottom: 0;
+}
+.version{
+  font-size: 0.4rem;
+}
