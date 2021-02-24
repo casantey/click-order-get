@@ -112,6 +112,9 @@ var success = {
 serve.use("/menu", require("./routes/menu"));
 serve.use("/institution", require("./routes/inst"));
 serve.use("/orders", require("./routes/orders"));
+serve.use("/user", require("./routes/user"));
+serve.use("/delivery", require("./routes/delivery"));
+serve.use("/staff", require("./routes/staff"));
 
 serve.get("/", verifyToken, (req, res) => {
 	res.send("<h1 class='text-center' style='font-family: Montserrat;'>" + rootMsg[0]["message"] + "</h1>");
@@ -277,7 +280,7 @@ route.post("/api-z/savePic", upload.single("pic"), (req, res) => {
 route.post("/api-z/createNewStaff", verifyToken, (req, res) => {
 	let newStaff = req.body;
 	dbConn.query(
-		"INSERT INTO staff VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),null,now())",
+		"INSERT INTO restaurants.staff(ID,Surname,Firstname,email,Gender,Age,Phone,Supervisor,InstitutionCode,Picture,date_created) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),now())",
 		[
 			newStaff.staffID,
 			newStaff.surname,
@@ -287,29 +290,32 @@ route.post("/api-z/createNewStaff", verifyToken, (req, res) => {
 			newStaff.age,
 			newStaff.phone,
 			newStaff.supervisor,
-			newStaff.inst
+			newStaff.inst,
+			newStaff.picture
 		],
 		(error, rows) => {
 			if (error) {
 				//when there is an error
-				saveError(error);
+				func.saveError(error);
 				return res.send(error);
 			}
 			// WHEN THERE IS NO ERROR
 			dbConn.query(
-				`INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
+				`INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
 				[
 					newStaff.email,
 					newStaff.pin,
 					`${newStaff.firstname} ${newStaff.surname}`,
 					newStaff.staff_type,
 					newStaff.inst,
-					newStaff.supervisor
+					newStaff.supervisor,
+					req.payload.country,
+					newStaff.staffID
 				],
 				(error, rows) => {
 					if (error) {
 						// WHEN THERE IS AN ERROR
-						saveError(error);
+						func.saveError(error);
 						return res.send(error);
 					}
 					res.send({code: 200, msg: "Staff member created successfully!"});
@@ -317,7 +323,7 @@ route.post("/api-z/createNewStaff", verifyToken, (req, res) => {
 			);
 		}
 	);
-}); //END route
+}); //END SERVE
 
 /** GET STAFF MEMBERS OF AN INSTITUTION */
 route.get("/api-z/getAllStaffOf/:id", verifyToken, (req, res) => {

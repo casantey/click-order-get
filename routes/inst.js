@@ -6,6 +6,7 @@ const multer = require("multer");
 var router = express.Router();
 var dbConn = require("../dbConn");
 const {verifyToken, saveError, createInitials, readExcelFile} = require("../functions");
+const {response} = require("express");
 
 var success = {
 	code: 200,
@@ -44,9 +45,24 @@ router.get("/all", (req, res) => {
 	);
 });
 
+router.get("/branches/all", verifyToken, (req, res) => {
+	dbConn.query(
+		`SELECT InstitutionCode inst_code, InstitutionName inst_name, Country country, is_head, districtcapital address, branchDescription,branchPhoto, inst_head, instLong,instLat, Initials FROM institution WHERE Category='Restaurant' AND inst_head=TRIM(?) AND InstitutionCode<>TRIM(?)`,
+		[ req.payload.instCode, req.payload.instCode ],
+		(error, rows) => {
+			if (error) {
+				// WHEN THERE IS AN ERROR
+				saveError(error);
+				return res.send(error);
+			}
+			res.send(rows);
+		}
+	);
+});
+
 router.get("/branches/:inst", (req, res) => {
 	dbConn.query(
-		`SELECT InstitutionCode inst_code, InstitutionName inst_name, Country country, is_head, branchDescription,branchPhoto, inst_head, instLong,instLat, Initials FROM institution WHERE Category='Restaurant' AND inst_head=TRIM(?)`,
+		`SELECT InstitutionCode inst_code, InstitutionName inst_name, Country country, is_head, districtcapital address, branchDescription,branchPhoto, inst_head, instLong,instLat, Initials FROM institution WHERE Category='Restaurant' AND inst_head=TRIM(?)`,
 		[ req.params.inst ],
 		(error, rows) => {
 			if (error) {
@@ -66,18 +82,36 @@ router.get("/branches/:inst", (req, res) => {
 });
 
 function getInstitutionDeliveryLocations(data, cb) {
-	dbConn.query(
-		`SELECT location_name,delivery_price,extra_notes FROM delivery_locations WHERE branch=TRIM(?)`,
-		[ data.inst_code ],
-		(error, rows) => {
-			if (error) {
-				// WHEN THERE IS AN ERROR
-				saveError(error);
-				return cb(error);
-			}
-			return cb(null, {...data, delivery_locations: rows});
+	// console.log(data);
+	let del_loc = `SELECT location_name,locationLong,locationLat,delivery_price,extra_notes FROM delivery_locations WHERE branch=TRIM('${data.inst_code}');`;
+	let sql = dbConn.query(`${del_loc}`, (error, rows) => {
+		if (error) {
+			// WHEN THERE IS AN ERROR
+			saveError(error);
+			return cb(error);
 		}
-	);
+		async.map([ data ], getInstitutionDeliveryRange, (err, response) => {
+			if (err) {
+				console.log(err);
+				throw err;
+			}
+			// console.log(response);
+			return cb(null, {...data, delivery_range: response[0].delivery_range, delivery_locations: rows});
+		});
+	});
+}
+
+function getInstitutionDeliveryRange(data, cb) {
+	// console.log(data);
+	let del_range = `SELECT rangeFrom, rangeTo, rangeCost,branch FROM deliveryRange WHERE branch=TRIM('${data.inst_code}');`;
+	let sql = dbConn.query(`${del_range}`, (error, rows) => {
+		if (error) {
+			// WHEN THERE IS AN ERROR
+			saveError(error);
+			return cb(error);
+		}
+		return cb(null, {delivery_range: rows});
+	});
 }
 
 function getInstitutionCategories(data, cb) {
@@ -112,18 +146,50 @@ function getInstitutionCategories(data, cb) {
 
 function getCategoryItems(data, cb) {
 	let id = data.id;
-	dbConn.query(`SELECT * FROM MenuItems WHERE category_id=TRIM(?) ORDER BY itemName`, [ id ], (error, rows) => {
-		if (error) {
-			// WHEN THERE IS AN ERROR
-			saveError(error);
-			return cb(error);
+	dbConn.query(
+		`SELECT itemName, itemDescription, itemPhoto, id, itemPrice FROM MenuItems WHERE category_id=TRIM(?) ORDER BY itemName`,
+		[ id ],
+		(error, rows) => {
+			if (error) {
+				// WHEN THERE IS AN ERROR
+				saveError(error);
+				return cb(error);
+			}
+			// WHEN THERE IS NO ERROR
+			async.map(rows, getFlavorGroups, (err, response) => {
+				if (err) {
+					console.log(err);
+					throw err;
+				}
+				// console.log(response);
+				return cb(null, {
+					...data,
+					menuItems: response
+				});
+			});
 		}
-		// WHEN THERE IS NO ERROR
-		return cb(null, {
-			...data,
-			menuItems: rows
-		});
-	});
+	);
+}
+
+function getFlavorGroups(data, cb) {
+	let id = data.id;
+	dbConn.query(
+		`SELECT flavorGroup, itemFlavors,flavorQuantity,flavorLimit FROM MenuItemFlavors WHERE menu_id=TRIM(?)`,
+		[ id ],
+		(error, rows) => {
+			if (error) {
+				// WHEN THERE IS AN ERROR
+				saveError(error);
+				return cb(error);
+			}
+			// WHEN THERE IS NO ERROR
+			// console.log(rows);
+			return cb(null, {
+				...data,
+				flavorGroups: rows
+			});
+		}
+	);
 }
 
 router.post("/delivery-location", xlsxTemp.single("xlsxFile"), (req, res) => {

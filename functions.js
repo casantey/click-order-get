@@ -1,3 +1,9 @@
+const fs = require("fs");
+const config = require("./config/config.json");
+const jwt = require("jsonwebtoken");
+const jwtKey = config.jwtKey;
+const xlsx = require("xlsx");
+
 module.exports = {
 	createInitials: function(text) {
 		let bd = text.trim().replace(/\//g, " ").replace(/-/g, " ").replace(/&/g, " ").split(" ");
@@ -52,29 +58,7 @@ module.exports = {
 		});
 	}, //END FUNCTION
 
-	saveError: function(error) {
-		let today = new Date();
-		var dd = String(today.getDate()).padStart(2, "0");
-		var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-		var yyyy = today.getFullYear();
-		var tt = today.getHours().toString().padStart(2, "0");
-		var m = today.getMinutes().toString().padStart(2, "0");
-		var ss = today.getSeconds().toString().padStart(2, "0");
-		var dayNight = tt < 12 ? "AM" : "PM";
-		let dateToday = dd + "_" + mm + "_" + yyyy;
-		let time = today.getHours() + ":" + m + ":" + ss + " " + dayNight;
-		// let dateToday = this.getDateToday("DATE");
-		// let time = this.getDateToday("TIME");
-		console.log("Query failed! \n  " + dateToday + " at " + time + " \n Error: " + JSON.stringify(error, undefined, 2));
-		fs.appendFile(
-			"./error_logs/error_" + dateToday + ".log",
-			`Time: ${time}\n\nError: ${JSON.stringify(error, undefined, 2)} \n\n/********************/\n\n`,
-			function(err) {
-				// "Time: " + time+ "\n\nError: " + JSON.stringify(error, undefined, 2) + "\n\n/********************/\n\n", function (err) {
-				if (err) throw err;
-			}
-		);
-	},
+	saveError: saveError,
 	verifyToken: function(req, res, next) {
 		// return console.log(req.headers);
 		if (!req.headers["x-auth"]) {
@@ -99,7 +83,7 @@ module.exports = {
 						return res.status(401).send("Unauthorized Request");
 						break;
 					default:
-						func.saveError(err);
+						saveError(err);
 						return res.status(401).send("Unauthorized Request");
 						break;
 				}
@@ -134,4 +118,28 @@ module.exports = {
 
 		return data;
 	}
+};
+
+var saveError = function(error) {
+	let today = new Date();
+	var dd = String(today.getDate()).padStart(2, "0");
+	var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+	var yyyy = today.getFullYear();
+	var tt = today.getHours().toString().padStart(2, "0");
+	var m = today.getMinutes().toString().padStart(2, "0");
+	var ss = today.getSeconds().toString().padStart(2, "0");
+	var dayNight = tt < 12 ? "AM" : "PM";
+	let dateToday = dd + "_" + mm + "_" + yyyy;
+	let time = today.getHours() + ":" + m + ":" + ss + " " + dayNight;
+	// let dateToday = this.getDateToday("DATE");
+	// let time = this.getDateToday("TIME");
+	console.log("Query failed! \n  " + dateToday + " at " + time + " \n Error: " + JSON.stringify(error, undefined, 2));
+	fs.appendFile(
+		"./error_logs/error_" + dateToday + ".log",
+		`Time: ${time}\n\nError: ${JSON.stringify(error, undefined, 2)} \n\n/********************/\n\n`,
+		function(err) {
+			// "Time: " + time+ "\n\nError: " + JSON.stringify(error, undefined, 2) + "\n\n/********************/\n\n", function (err) {
+			if (err) throw err;
+		}
+	);
 };

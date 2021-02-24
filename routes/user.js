@@ -15,6 +15,7 @@ var success = {
 router.post("/authenticate", (req, res) => {
 	// console.log(req.headers["x-forwarded-for"]);
 	// console.log(req.connection.remoteAddress);
+	// console.log(req.body);
 	const ip =
 		(req.headers["x-forwarded-for"] || "").split(",").pop().trim() ||
 		req.connection.remoteAddress ||
@@ -22,7 +23,7 @@ router.post("/authenticate", (req, res) => {
 		req.connection.socket.remoteAddress;
 	// console.log({ip});
 	dbConn.query(
-		`SELECT a.Username username, a.Fullname fullname, b.inst_head, c.InstitutionName inst_head_name, b.InstitutionCode instCode, b.districtcapital instLoc, a.UserType userType, a.InstitutionName institutionName, b.Country country, b.is_head, b.Category FROM web_user a INNER JOIN institution b ON a.InstitutionName=b.InstitutionName LEFT JOIN institution c ON b.inst_head=c.InstitutionCode WHERE a.Username=TRIM(?) AND a.Password=TRIM(?)`,
+		`SELECT a.Username username, a.Fullname fullname, b.inst_head, a.user_id, d.Phone, c.InstitutionName inst_head_name, b.InstitutionCode instCode, b.districtcapital instLoc, a.UserType userType, a.InstitutionName institutionName, b.Country country, d.Picture, b.is_head, b.Category FROM web_user a INNER JOIN institution b ON a.InstitutionName=b.InstitutionName LEFT JOIN institution c ON b.inst_head=c.InstitutionCode LEFT JOIN staff d ON a.user_id=d.ID WHERE a.Username=TRIM(?) AND a.Password=TRIM(?)`,
 		[ req.body.username, req.body.password ],
 		(error, rows) => {
 			if (!error) {
@@ -31,17 +32,7 @@ router.post("/authenticate", (req, res) => {
 				if (rows.length === 0) return res.send(null);
 				let r = rows[0];
 				let payload = {
-					username: r.username,
-					fullname: r.fullname,
-					userType: r.userType,
-					institutionName: r.institutionName,
-					country: r.country,
-					is_head: r.is_head,
-					Category: r.Category,
-					instCode: r.instCode,
-					instLoc: r.instLoc,
-					inst_head: r.inst_head,
-					inst_head_name: r.inst_head_name
+					...r
 				};
 				// console.log(payload);
 				let token = jwt.sign(payload, config.jwtKey, {algorithm: "HS384"});
