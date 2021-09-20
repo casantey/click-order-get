@@ -215,6 +215,51 @@ router.post("/order", (req, res) => {
 	});
 });
 
+router.post("/", verifyToken, (req, res) => {
+	let bod = req.body;
+	let q = `SELECT a.*, b.orderStatus,b.orderStatusId FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId WHERE a.orderStatus<>7`;
+	if (req.payload.userType != "Super Admin") q += ` AND institution=TRIM("${req.payload.instCode}")`;
+	if (bod.report == "2") {
+		q += ` AND a.orderStatus=6 `;
+	}
+	if (bod.report == "1") {
+		q += ` AND a.orderStatus<>6 `;
+	}
+	if (bod.timePeriod == "today") {
+		q += ` AND DATE(a.dateCreated)=CURDATE() `;
+	}
+	if (bod.timePeriod == "yesterday") {
+		q += ` AND DATE(a.dateCreated)=CURDATE()-INTERVAL 1 DAY `;
+	}
+	if (bod.timePeriod == "week") {
+		q += ` AND DATE(a.dateCreated) BETWEEN CURDATE()-INTERVAL 1 WEEK AND CURDATE() `;
+	}
+	if (bod.timePeriod == "month") {
+		q += ` AND DATE(a.dateCreated) BETWEEN CURDATE()-INTERVAL 1 MONTH AND CURDATE() `;
+	}
+	if (bod.timePeriod == "year") {
+		q += ` AND DATE(a.dateCreated) BETWEEN CURDATE()-INTERVAL 1 YEAR AND CURDATE() `;
+	}
+	// if(bod.report=="2"){
+	// 	q+=`AND `;
+	// }
+	// if(bod.report=="2"){
+	// 	q+=`AND `;
+	// }
+	// if(bod.report=="2"){
+	// 	q+=`AND `;
+	// }
+	dbConn.query(q + " ORDER BY dateCreated DESC", (error, rows) => {
+		if (error) {
+			// WHEN THERE IS AN ERROR
+			saveError(error);
+			return res.send(error);
+		}
+		// WHEN THERE IS NO ERROR
+		res.send(rows);
+	});
+});
+
 router.delete("/:id", (req, res) => {
 	dbConn.query("DELETE FROM orders WHERE orderNo=TRIM(?)", [ req.params.id ], (error, rows) => {
 		if (error) {

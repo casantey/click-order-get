@@ -110,6 +110,14 @@ module.exports = {
 			}
 		);
 	},
+	getQueryString: (arr) => {
+		let ns = "";
+		for (let i = 0; i < arr.length; i++) {
+			ns += `"${arr[i].toString()}"`;
+			if (i != arr.length - 1) ns += ",";
+		}
+		return ns;
+	},
 	readExcelFile: function(file) {
 		let filePath = `./.temp/${file}.xlsx`;
 		let wb = xlsx.readFile(filePath);

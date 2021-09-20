@@ -10,6 +10,21 @@ var success = {
 	msg: "Action completed successfully!"
 };
 
+router.get("/flavor-list", verifyToken, (req, res) => {
+	dbConn.query(
+		`SELECT * FROM flavorList WHERE branch=TRIM(?) ORDER BY groupName`,
+		[ req.payload.instCode ],
+		(error, rows) => {
+			if (error) {
+				// WHEN THERE IS AN ERROR
+				saveError(error);
+				return res.send(error);
+			}
+			res.send(rows);
+		}
+	);
+});
+
 router.get("/items/:inst", (req, res) => {
 	dbConn.query(
 		`SELECT DISTINCT id,category,categoryDescription,categoryPhoto,branch FROM menu_category WHERE branch=TRIM(?) ORDER BY category`,
@@ -59,7 +74,7 @@ function getCategoryItems(data, cb) {
 router.get("/:cate/items/:inst", verifyToken, (req, res) => {
 	// console.log(req.params);
 	dbConn.query(
-		`SELECT DISTINCT itemName, itemPrice,itemFlavors,flavorQuantity,flavorLimit FROM MenuItems a INNER JOIN menu_category b ON a.category_id=b.id WHERE b.category=TRIM(?) AND a.branch=TRIM(?) ORDER BY a.itemName`,
+		`SELECT DISTINCT itemName, flavorGroup, itemPrice,itemFlavors,flavorQuantity,flavorLimit FROM MenuItems a INNER JOIN menu_category b ON a.category_id=b.id WHERE b.category=TRIM(?) AND a.branch=TRIM(?) ORDER BY a.itemName`,
 		[ req.params.cate, req.params.inst ],
 		(error, rows) => {
 			if (error) {
@@ -72,11 +87,21 @@ router.get("/:cate/items/:inst", verifyToken, (req, res) => {
 	);
 });
 
+router.get("/flavor/:id", verifyToken, (req, res) => {
+	dbConn.query("SELECT * FROM flavorList WHERE flavor_list_id=TRIM(?)", [ req.params.id ], (error, rows) => {
+		if (error) {
+			saveError(error);
+			return res.send(error);
+		}
+		return res.send(rows);
+	});
+});
+
 router.get("/all", verifyToken, (req, res) => {
 	let query =
-		"SELECT a.*, c.category, c.categoryDescription, c.categoryPhoto, b.institutionName inst_name FROM MenuItems a INNER JOIN institution b ON a.branch=b.institutionCode INNER JOIN menu_category c ON a.category_id=c.id WHERE a.branch=TRIM(?) ORDER BY itemName";
+		"SELECT a.*, c.category, d.groupName flavorGroupName, c.categoryDescription, c.categoryPhoto, b.institutionName inst_name FROM MenuItems a INNER JOIN institution b ON a.branch=b.institutionCode INNER JOIN menu_category c ON a.category_id=c.id LEFT JOIN flavorList d ON a.flavorGroup=d.flavor_list_id WHERE a.branch=TRIM(?) ORDER BY itemName";
 	if (req.payload.userType === "Super Admin")
-		query = `SELECT a.*, c.category, c.categoryDescription, c.categoryPhoto, b.institutionName inst_name FROM MenuItems a INNER JOIN institution b ON a.branch=b.institutionCode INNER JOIN menu_category c ON a.category_id=c.id ORDER BY itemName`;
+		query = `SELECT a.*, c.category, d.groupName flavorGroupName, c.categoryDescription, c.categoryPhoto, b.institutionName inst_name FROM MenuItems a INNER JOIN institution b ON a.branch=b.institutionCode INNER JOIN menu_category c ON a.category_id=c.id LEFT JOIN flavorList d ON a.flavorGroup=d.flavor_list_id ORDER BY itemName`;
 	dbConn.query(query, [ req.payload.instCode ], (error, rows) => {
 		if (error) {
 			// WHEN THERE IS AN ERROR
@@ -104,7 +129,7 @@ router.get("/categories/:inst", verifyToken, (req, res) => {
 
 router.get("/list/:inst", verifyToken, (req, res) => {
 	dbConn.query(
-		`SELECT a.category_id,a.flavorQuantity, a.flavorLimit, b.category,b.categoryDescription,b.categoryPhoto,a.itemName,a.itemDescription,a.itemPhoto,a.itemPrice,a.itemFlavors,a.institution FROM MenuItems a INNER JOIN menu_category b ON a.category_id=b.id WHERE b.branch=TRIM(?) AND a.itemPhoto <> "" AND b.categoryPhoto <> "" ORDER BY itemName`,
+		`SELECT a.category_id,a.flavorQuantity, a.flavorGroup, a.flavorLimit, b.category,b.categoryDescription,b.categoryPhoto,a.itemName,a.itemDescription,a.itemPhoto,a.itemPrice,a.itemFlavors,a.institution FROM MenuItems a INNER JOIN menu_category b ON a.category_id=b.id WHERE b.branch=TRIM(?) AND a.itemPhoto <> "" AND b.categoryPhoto <> "" ORDER BY itemName`,
 		[ req.params.inst ],
 		(error, rows) => {
 			if (error) {
@@ -132,7 +157,7 @@ router.put("/item/:id", verifyToken, (req, res) => {
 	// console.log(item);
 	let q = ``;
 	if (item.view === "menu") {
-		q = `UPDATE MenuItems SET category_id="${item.category_id.trim()}",flavorLimit=${item.flavorLimit},flavorQuantity="${item.flavorQuantity.trim()}",itemDescription="${item.itemDescription.trim()}",itemFlavors="${item.itemFlavors.trim()}",itemName="${item.itemName.trim()}",itemPrice=${item.itemPrice}`;
+		q = `UPDATE MenuItems SET category_id="${item.category_id.trim()}",flavorLimit=${item.flavorLimit},flavorQuantity="${item.flavorQuantity.trim()}",flavorGroup="${item.flavorGroup}",itemDescription="${item.itemDescription.trim()}",itemFlavors="${item.itemFlavors.trim()}",itemName="${item.itemName.trim()}",itemPrice=${item.itemPrice}`;
 
 		if (item.itemPhoto != "") q += `,itemPhoto=TRIM("${item.itemPhoto}")`;
 	}
@@ -144,12 +169,40 @@ router.put("/item/:id", verifyToken, (req, res) => {
 		// functions.saveQuery(query.sql);
 		if (error) {
 			// WHEN THERE IS AN ERROR
-			saveError(error);
+			// saveError(error);
+			console.log(error);
 			return res.send(error);
 		}
 		// console.log(rows);
-		if (rows.changedRows === 0) return res.send({code: 204, msg: "No menu Item was updated"});
+		if (rows.changedRows === 0) return res.send({code: 204, msg: "No Items were updated"});
 		res.send(success);
+	});
+});
+
+router.put("/flavor-list/:id", verifyToken, (req, res) => {
+	let bod = req.body;
+	dbConn.query(
+		`UPDATE flavorList SET groupName=TRIM(?), flavorLimit=TRIM(?), flavors=TRIM(?), flavorQty=TRIM(?),date_added=NOW() WHERE flavor_list_id=TRIM(?)`,
+		[ bod.groupName, bod.flavorLimit, bod.flavors, bod.flavorQty, bod.id ],
+		(error, rows) => {
+			if (error) {
+				// WHEN THERE IS AN ERROR
+				saveError(error);
+				return res.send(error);
+			}
+			return res.send(success);
+		}
+	);
+});
+
+router.delete("/flavor-list/:id", verifyToken, (req, res) => {
+	dbConn.query(`DELETE FROM flavorList WHERE flavor_list_id=TRIM(?)`, [ req.params.id ], (error, rows) => {
+		if (error) {
+			// WHEN THERE IS AN ERROR
+			saveError(error);
+			return res.send(error);
+		}
+		return res.send(success);
 	});
 });
 
@@ -163,6 +216,22 @@ router.delete("/item/:id/:view", verifyToken, (req, res) => {
 		}
 		res.send(success);
 	});
+});
+
+router.post("/flavor-list", verifyToken, (req, res) => {
+	let bod = req.body;
+	dbConn.query(
+		`INSERT INTO flavorList (groupName, flavors, flavorQty, flavorLimit, branch, added_by, date_added) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),NOW())`,
+		[ bod.groupName, bod.flavors, bod.flavorQty, bod.flavorLimit, req.payload.instCode, req.payload.username, bod.id ],
+		(error, rows) => {
+			if (error) {
+				// WHEN THERE IS AN ERROR
+				saveError(error);
+				return res.send(error);
+			}
+			res.send(success);
+		}
+	);
 });
 
 router.post("/duplicate-list", verifyToken, (req, res) => {
@@ -182,7 +251,7 @@ router.post("/duplicate-list", verifyToken, (req, res) => {
 			}
 			// console.log(s.sql);
 			let categoryQuery = `INSERT INTO menu_category(id,category,categoryDescription,categoryPhoto,institution,branch,added_by,dateAdded) VALUES `;
-			let menuQuery = `INSERT INTO MenuItems (category_id,flavorLimit,flavorQuantity,institution,itemDescription,itemFlavors,itemName,itemPhoto,itemPrice,branch,dateCreated,added_by)
+			let menuQuery = `INSERT INTO MenuItems (category_id,flavorGroup,flavorLimit,flavorQuantity,institution,itemDescription,itemFlavors,itemName,itemPhoto,itemPrice,branch,dateCreated,added_by)
 			VALUES `;
 			async.map(rows, getInstCategoryCount, (err, response) => {
 				if (err) {
@@ -234,9 +303,11 @@ router.post("/duplicate-list", verifyToken, (req, res) => {
 							for (let i = 0; i < bod.length; i++) {
 								uid = newSet.filter((cate) => cate.category === bod[i].category)[0].id;
 								// console.log(bod[i]);
-								menuQuery += `("${uid}","${bod[i].flavorLimit}","${bod[i].flavorQuantity}","${bod[i]
-									.institution}","${bod[i].itemDescription}","${bod[i].itemFlavors}","${bod[i].itemName}","${bod[i]
-									.itemPhoto}","${bod[i].itemPrice}","${det.branch}", NOW(),"${req.payload.username}")`;
+								menuQuery += `("${uid}","${bod[i].flavorGroup}","${bod[i].flavorLimit}","${bod[i]
+									.flavorQuantity}","${bod[i].institution}","${bod[i].itemDescription}","${bod[i].itemFlavors}","${bod[
+									i
+								].itemName}","${bod[i].itemPhoto}","${bod[i].itemPrice}","${det.branch}", NOW(),"${req.payload
+									.username}")`;
 								if (i != bod.length - 1) menuQuery += ",";
 							}
 							let q = dbConn.query(menuQuery, (error, rows) => {
@@ -322,14 +393,14 @@ router.post("/duplicate", verifyToken, (req, res) => {
 				return res.send(error);
 			}
 			// WHEN THERE IS NO ERROR
-			let query = `INSERT INTO MenuItems (category_id,flavorLimit,flavorQuantity,institution,itemDescription,itemFlavors,itemName,itemPhoto,itemPrice,branch,dateCreated,added_by)
+			let query = `INSERT INTO MenuItems (category_id,flavorGroup,flavorLimit,flavorQuantity,institution,itemDescription,itemFlavors,itemName,itemPhoto,itemPrice,branch,dateCreated,added_by)
 	VALUES `;
 			for (let i = 0; i < bod.length; i++) {
 				uid = newSet.filter((cate) => cate.category === bod[i].category)[0].id;
 				// return console.log(uid);
-				query += `("${uid}","${bod[i].flavorLimit}","${bod[i].flavorQuantity}","${bod[i].institution}","${bod[i]
-					.itemDescription}","${bod[i].itemFlavors}","${bod[i].itemName}","${bod[i].itemPhoto}","${bod[i]
-					.itemPrice}","${req.body.inst}", NOW(),"${req.payload.username}")`;
+				query += `("${uid}","${bod[i].flavorGroup}","${bod[i].flavorLimit}","${bod[i].flavorQuantity}","${bod[i]
+					.institution}","${bod[i].itemDescription}","${bod[i].itemFlavors}","${bod[i].itemName}","${bod[i]
+					.itemPhoto}","${bod[i].itemPrice}","${req.body.inst}", NOW(),"${req.payload.username}")`;
 				if (i != bod.length - 1) query += ",";
 			}
 			let q = dbConn.query(query, (error, rows) => {
@@ -363,10 +434,11 @@ router.post("/item", verifyToken, (req, res) => {
 	// return res.send(req.body);
 	if (bod.view === "menu")
 		dbConn.query(
-			`INSERT INTO MenuItems (category_id,flavorLimit,flavorQuantity,institution,branch,itemName,itemDescription,itemFlavors,itemPhoto,itemPrice,added_by,dateCreated)
-    VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),NOW())`,
+			`INSERT INTO MenuItems (category_id,flavorGroup,flavorLimit,flavorQuantity,institution,branch,itemName,itemDescription,itemFlavors,itemPhoto,itemPrice,added_by,dateCreated)
+    VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),NOW())`,
 			[
 				bod.category_id,
+				bod.flavorGroup,
 				bod.flavorLimit,
 				bod.flavorQuantity,
 				bod.institution,

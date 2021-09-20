@@ -42,7 +42,7 @@ route.use(bodyParser.json()); //parse all requests to JSON format
 route.use(cors()); //for cross-origin access
 var router = express.Router();
 
-route.use("/orders", require("./routes/order"));
+route.use("/orders", require("./routes/orders"));
 route.use("/menu", require("./routes/menu"));
 route.use("/institution", require("./routes/inst"));
 route.use("/user", require("./routes/user"));

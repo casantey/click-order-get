@@ -5,8 +5,7 @@ const xlsx = require("xlsx");
 const multer = require("multer");
 var router = express.Router();
 var dbConn = require("../dbConn");
-const {verifyToken, saveError, createInitials, readExcelFile} = require("../functions");
-const {response} = require("express");
+const {verifyToken, saveError, createInitials, readExcelFile, getQueryString} = require("../functions");
 
 var success = {
 	code: 200,
@@ -61,6 +60,7 @@ router.get("/branches/all", verifyToken, (req, res) => {
 });
 
 router.get("/branches/:inst", (req, res) => {
+	console.log("Getting branches and menu items for " + req.params.inst);
 	dbConn.query(
 		`SELECT InstitutionCode inst_code, InstitutionName inst_name, Country country, is_head, districtcapital address, branchDescription,branchPhoto, inst_head, instLong,instLat, Initials FROM institution WHERE Category='Restaurant' AND inst_head=TRIM(?)`,
 		[ req.params.inst ],
@@ -71,8 +71,11 @@ router.get("/branches/:inst", (req, res) => {
 				return res.send(error);
 			}
 			// res.send(rows);
+			console.log("getting menu categories");
 			async.map(rows, getInstitutionCategories, (err, response) => {
+				console.log("getting delivery locations");
 				async.map(response, getInstitutionDeliveryLocations, (err, response) => {
+					console.log("sending results for " + req.params.inst);
 					return res.send(response);
 				});
 				// return res.send(response);
@@ -90,6 +93,7 @@ function getInstitutionDeliveryLocations(data, cb) {
 			saveError(error);
 			return cb(error);
 		}
+		console.log("getting delivery ranges");
 		async.map([ data ], getInstitutionDeliveryRange, (err, response) => {
 			if (err) {
 				console.log(err);
@@ -147,7 +151,7 @@ function getInstitutionCategories(data, cb) {
 function getCategoryItems(data, cb) {
 	let id = data.id;
 	dbConn.query(
-		`SELECT itemName, itemDescription, itemPhoto, id, itemPrice FROM MenuItems WHERE category_id=TRIM(?) ORDER BY itemName`,
+		`SELECT itemName, itemDescription, itemPhoto, id, itemPrice,flavorGroup FROM MenuItems WHERE category_id=TRIM(?) ORDER BY itemName`,
 		[ id ],
 		(error, rows) => {
 			if (error) {
@@ -172,9 +176,18 @@ function getCategoryItems(data, cb) {
 }
 
 function getFlavorGroups(data, cb) {
-	let id = data.id;
+	let id = data.flavorGroup;
+	if (!id)
+		return cb(null, {
+			...data,
+			flavorGroups: []
+		});
+	let query = `SELECT flavor_list_id, groupName flavorGroup, flavors itemFlavors, flavorQty flavorQuantity, flavorLimit FROM flavorList WHERE flavor_list_id IN (${getQueryString(
+		id.toString().split(",")
+	)}) ORDER BY groupName`;
 	dbConn.query(
-		`SELECT flavorGroup, itemFlavors,flavorQuantity,flavorLimit FROM MenuItemFlavors WHERE menu_id=TRIM(?)`,
+		// `SELECT flavorGroup, itemFlavors,flavorQuantity,flavorLimit FROM MenuItemFlavors WHERE menu_id=TRIM(?)`,
+		query,
 		[ id ],
 		(error, rows) => {
 			if (error) {
