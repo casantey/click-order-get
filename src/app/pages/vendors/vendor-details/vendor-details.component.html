@@ -1,0 +1,144 @@
+<app-navigation>
+  <section>
+    <div class="container">
+      <div class="row mb-4">
+        <div class="col">
+          <app-head [head]="{ title: 'Vendor Details' }">
+            <button
+              color="primary"
+              matTooltip="Modify details"
+              (click)="modifyVendorDetails()"
+              mat-stroked-button
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              color="primary"
+              matTooltip="Add new product"
+              mat-stroked-button
+            >
+              <mat-icon>shopping_bag</mat-icon>
+              <span>Add Product</span>
+            </button>
+          </app-head>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md">
+          <mat-card
+            style="border-right: 4px solid"
+            [ngClass]="vendor.vendorStatus ? 'border-success' : 'border-danger'"
+          >
+            <mat-progress-bar
+              mode="indeterminate"
+              style="margin: 1rem auto"
+              color="warn"
+              *ngIf="loading"
+            ></mat-progress-bar>
+
+            <div class="row">
+              <div
+                class="
+                  col-md-3
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  p-4
+                "
+              >
+                <!-- <div mat-card-avatar class="vendor-logo mx-auto"></div> -->
+                <img
+                  src="https://rms.bodacommunity.io:8080/cssrms/assets/img/boda-logo.png"
+                  alt="Vendor Logo"
+                  class="mx-auto p-4"
+                  width="250px"
+                />
+              </div>
+              <div class="col-md">
+                <h1 class="display-3">{{ vendor.vendorName }}</h1>
+                <p class="entry mb-0">
+                  <strong>Contact Email:</strong>
+                  <span>{{ vendor.vendorEmail }}</span>
+                </p>
+                <p class="entry mb-0">
+                  <strong>Contact Phone:</strong>
+                  <span>{{ vendor.vendorPhone }}</span>
+                </p>
+                <p class="entry mb-0">
+                  <strong>Description</strong>
+                  <span>{{ vendor.vendorDescription }}</span>
+                </p>
+                <div class="d-flex justify-content-end">
+                  <p class="date-created">{{ formatDate(vendor.dateAdded) }}</p>
+                </div>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md">
+          <mat-card>
+            <mat-card-content>
+              <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Available Attributes</h2>
+                <button
+                  matTooltip="Add attribute"
+                  (click)="addAttribute()"
+                  mat-icon-button
+                >
+                  <mat-icon>bookmark_add</mat-icon>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="col-md">
+          <mat-card>
+            <mat-card-content>
+              <h2 class="display-5">Products - {{ vendor.products.length }}</h2>
+              <mat-accordion>
+                <mat-expansion-panel *ngFor="let product of vendor.products">
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      {{ product.productName }}
+                    </mat-panel-title>
+                    <!-- <mat-panel-description>
+                      {{ product.productCategory }}
+                    </mat-panel-description> -->
+                  </mat-expansion-panel-header>
+                  <p class="entry mb-0">
+                    <strong>Description</strong>
+                    <span>{{ product.productDescription }}</span>
+                  </p>
+                  <p class="entry mb-0">
+                    <strong>Category</strong>
+                    <span>{{ product.productCategory }}</span>
+                  </p>
+                  <p class="entry mb-0">
+                    <strong>Price</strong>
+                    <span>{{ product.unitPrice }}</span>
+                  </p>
+                  <div class="d-flex justify-content-end">
+                    <p class="date-created">
+                      {{ formatDate(product.dateAdded) }}
+                    </p>
+                  </div>
+                  <!-- <p>{{ product | json }}</p> -->
+                </mat-expansion-panel>
+              </mat-accordion>
+              <!-- {{ vendor.products | json }} -->
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="col-md">
+          <!-- <mat-card>
+            <mat-card-content> some other stuff here </mat-card-content>
+          </mat-card> -->
+        </div>
+      </div>
+    </div>
+  </section>
+</app-navigation>

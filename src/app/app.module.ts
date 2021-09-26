@@ -9,6 +9,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
+import { entryComponents } from './util/modules/entryComponents';
+
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { ChartsModule } from 'ng2-charts';
 import { AgmCoreModule } from '@agm/core';
@@ -19,9 +21,44 @@ import { LoginComponent } from './views/main/login/login.component';
 import { FooterComponent } from './views/main/footer/footer.component';
 import { NavComponent } from './views/main/nav/nav.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { NavigationComponent } from './components/base/navigation/navigation.component';
+import { ChangePasswordComponent } from './components/dialogs/change-password/change-password.component';
+import { MapComponent } from './components/dialogs/map/map.component';
+import { ModifyInstitutionComponent } from './components/dialogs/modify-institution/modify-institution.component';
+import { ConfirmDeleteComponent } from './components/dialogs/confirm-delete/confirm-delete.component';
+import { VendorsComponent } from './pages/vendors/vendors.component';
+import { OrdersComponent } from './pages/orders/orders.component';
+import { ProductsComponent } from './pages/products/products.component';
+import { HeadComponent } from './components/base/head/head.component';
+import { AddVendorComponent } from './components/dialogs/add-vendor/add-vendor.component';
+import { AddProductComponent } from './components/dialogs/add-product/add-product.component';
+import { OrderDetailsComponent } from './pages/orders/order-details/order-details.component';
+import { VendorDetailsComponent } from './pages/vendors/vendor-details/vendor-details.component';
+import { AddAttributeComponent } from './components/dialogs/add-attribute/add-attribute.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, FooterComponent, NavComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    FooterComponent,
+    NavComponent,
+    DashboardComponent,
+    NavigationComponent,
+    ChangePasswordComponent,
+    MapComponent,
+    ModifyInstitutionComponent,
+    ConfirmDeleteComponent,
+    VendorsComponent,
+    OrdersComponent,
+    ProductsComponent,
+    HeadComponent,
+    AddVendorComponent,
+    AddProductComponent,
+    OrderDetailsComponent,
+    VendorDetailsComponent,
+    AddAttributeComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -52,6 +89,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     },
   ],
   bootstrap: [AppComponent],
-  entryComponents: [],
+  entryComponents,
 })
 export class AppModule {}

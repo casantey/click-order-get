@@ -1,0 +1,194 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="push" #sidenav fixedInViewport>
+    <mat-toolbar>
+      <span>Click-Order-Get</span>
+    </mat-toolbar>
+    <mat-nav-list>
+      <!-- <button
+        class="nav-link"
+        (click)="sidenav.toggle()"
+        routerLink="/dashboard"
+        [disabled]="(page=='/dashboard')"
+        mat-menu-item
+      >
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </button> -->
+      <button
+        class="nav-link"
+        (click)="sidenav.toggle()"
+        [disabled]="(page=='/orders')"
+        routerLink="/orders"
+        mat-menu-item
+      >
+        <mat-icon>task</mat-icon>
+        Orders
+      </button>
+      <button
+        class="nav-link"
+        (click)="sidenav.toggle()"
+        routerLink="/vendors"
+        [disabled]="(page=='/vendors')"
+        mat-menu-item
+      >
+        <mat-icon>store</mat-icon>
+        <span>Vendors</span>
+      </button>
+      <!-- <button class="nav-link" [matMenuTriggerFor]="registration" mat-menu-item>
+        <mat-icon>note_add</mat-icon>
+        Register
+      </button> -->
+      <!-- <button class="nav-link" (click)="sidenav.toggle()" routerLink="/statistics"
+				[disabled]="(page=='/statistics') && show" mat-menu-item *ngIf="show && !deli">
+				<mat-icon>assessment</mat-icon>
+				{{'menu.reports' | translate}}
+			</button> -->
+      <button
+        class="nav-link"
+        (click)="sidenav.toggle()"
+        routerLink="/products"
+        [disabled]="(page=='/products')"
+        mat-menu-item
+      >
+        <mat-icon>category</mat-icon>
+        Products
+      </button>
+      <!-- <button
+        class="nav-link"
+        (click)="sidenav.toggle()"
+        [disabled]="(page=='/orders')"
+        routerLink="/orders"
+        mat-menu-item
+      >
+        <mat-icon>task</mat-icon>
+        Orders
+      </button> -->
+      <!-- <button class="nav-link" (click)="sidenav.toggle()" [disabled]="(page=='/community-members')"
+				*ngIf="(userType=='Admin')" routerLink="/community-members" mat-menu-item>
+				<mat-icon>people_alt</mat-icon>
+			
+				{{'menu.comm' | translate}}
+			</button> -->
+      <!-- <button 
+				class="nav-link" 
+				(click)="sidenav.toggle()" 
+				disabled
+				*ngIf="(userType=='Admin')"
+				routerLink="/quarantined"
+				mat-menu-item
+			>
+				<mat-icon>not_interested</mat-icon>
+				Quarantined
+			</button> -->
+      <!-- <button class="nav-link" (click)="sidenav.toggle()" [disabled]="(page=='/staff')" *ngIf="!(userType=='Admin')"
+				routerLink="/staff" mat-menu-item>
+				<mat-icon>group</mat-icon>
+				All Registered Staff
+			</button> -->
+      <!-- <button class="nav-link" (click)="sidenav.toggle()" [disabled]="(page=='/preferences')" routerLink="/preferences"
+				*ngIf="show && !deli" mat-menu-item>
+				<mat-icon>tune</mat-icon>
+				Preferences
+			</button> -->
+      <!-- <button routerLink="/preferences" class="nav-link" (click)="sidenav.toggle()" *ngIf="is_sAdmin"
+				[disabled]="(page=='/preferences')" mat-menu-item>
+				<mat-icon>settings</mat-icon>
+				<span>{{'menu.pref' | translate}}</span>
+			</button> -->
+      <!-- <button routerLink="/stock" *ngIf="deli" class="nav-link" [disabled]="(page=='/stock')" (click)="sidenav.toggle()"
+				mat-menu-item>
+				<mat-icon>category</mat-icon>
+				<span>{{'menu.stock' |translate}}</span>
+			</button> -->
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <nav class="navbar fixed-top shadow-sm">
+      <button *ngIf="tUser" [disabled]="tUser" mat-button>Triage User</button>
+      <button
+        (click)="sidenav.toggle()"
+        class="menu-toggle"
+        *ngIf="!tUser"
+        matTooltip="Toggle Menu"
+        mat-button
+      >
+        <mat-icon>menu</mat-icon>
+        Menu
+      </button>
+      <a routerLink="/" matTooltip="Home" *ngIf="!(page=='/orders')">
+        <span class="navbar-brand mb-0 h0">
+          <img src="{{imgLoc}}" alt="boda-logo" width="100px" />
+          <span *ngIf="!(isHandset$ | async)">{{head}}</span>
+        </span>
+      </a>
+      <span class="navbar-brand mb-0 h0 d-flex justify-content-center align-items-center" *ngIf="(page=='/orders')">
+        <img src="{{imgLoc}}" alt="boda-logo" width="100px" />
+        <span class="ml-4" *ngIf="!(isHandset$ | async)">{{head}}</span>
+      </span>
+      <button [matMenuTriggerFor]="navButton" mat-icon-button>
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </nav>
+    <ng-content></ng-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<mat-menu #navButton="matMenu">
+  <button (click)="changePassword()" mat-menu-item>
+    <mat-icon>vpn_key</mat-icon>
+    <span>Change Password</span>
+  </button>
+  <button (click)="logout()" mat-menu-item>
+    <mat-icon>exit_to_app</mat-icon>
+    <span>Logout</span>
+  </button>
+</mat-menu>
+
+<mat-menu #registration="matMenu">
+  <button
+    class="nav-link"
+    (click)="sidenav.toggle()"
+    *ngIf="userType!='Admin' || is_head"
+    routerLink="/register-admin"
+    [disabled]="page=='/register-admin'"
+    mat-menu-item
+  >
+    <mat-icon>person_pin</mat-icon>
+    Register Restaurant Admin
+    <!-- {{'menu.regInstAdmin' | translate}} -->
+  </button>
+  <button
+    class="nav-link"
+    (click)="sidenav.toggle()"
+    *ngIf="(userType=='Admin')"
+    routerLink="/register-staff"
+    [disabled]="page=='/register-staff'"
+    mat-menu-item
+  >
+    <mat-icon>supervised_user_circle</mat-icon>
+    Register Restaurant Staff
+    <!-- {{'menu.regStaff' | translate}} -->
+  </button>
+  <button
+    class="nav-link"
+    (click)="sidenav.toggle()"
+    *ngIf="!(userType=='Admin')"
+    routerLink="/register-user"
+    [disabled]="page=='/register-user'"
+    mat-menu-item
+  >
+    <mat-icon>supervised_user_circle</mat-icon>
+    Register Secure Staff
+  </button>
+  <button
+    class="nav-link"
+    (click)="sidenav.toggle()"
+    routerLink="/register-inst"
+    *ngIf="userType!='Admin' || is_head"
+    [disabled]="page=='/register-inst'"
+    mat-menu-item
+  >
+    <mat-icon>business</mat-icon>
+    Register Institution
+  </button>
+</mat-menu>

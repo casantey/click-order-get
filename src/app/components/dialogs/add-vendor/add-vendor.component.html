@@ -1,0 +1,123 @@
+<div class="dialog-wrapper width-500">
+  <div class="title">
+    {{ data.type == "modify" ? "Modify Vendor Details" : "New Vendor" }}
+  </div>
+  <div class="body">
+    <form [formGroup]="newVendor">
+      <div class="row">
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Vendor Name</mat-label>
+            <input
+              matInput
+              formControlName="vendorName"
+              placeholder="Vendor Name"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Vendor Phone</mat-label>
+            <input
+              matInput
+              formControlName="vendorPhone"
+              type="tel"
+              placeholder="+233201234567"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Vendor Email</mat-label>
+            <input
+              matInput
+              formControlName="vendorEmail"
+              type="email"
+              placeholder="email@example.com"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row" *ngIf="data.type != 'modify'">
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Vendor Logo</mat-label>
+            <input
+              matInput
+              formControlName="vendorLogo"
+              placeholder="Vendor Logo"
+            />
+            <mat-hint align="end">https://vendor.logo.link</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Longitude</mat-label>
+            <input
+              matInput
+              formControlName="longitude"
+              placeholder="-0.1969"
+              type="number"
+            />
+          </mat-form-field>
+        </div>
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Latitude</mat-label>
+            <input
+              matInput
+              formControlName="latitude"
+              placeholder="5.55602"
+              type="number"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <textarea
+              rows="4"
+              cols="15"
+              style="resize: none"
+              formControlName="vendorDescription"
+              matInput
+              placeholder="Description"
+            ></textarea>
+            <mat-hint align="end">
+              Short description of vendor's products and services
+            </mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="actions">
+    <button mat-stroked-button color="warn" (click)="onNoClick()">
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="newVendor.invalid"
+      [mat-dialog-close]="newVendor.value"
+    >
+      <div *ngIf="data.type != 'modify'; else modify">
+        <mat-icon>add_business</mat-icon>
+        <span>Add Vendor</span>
+      </div>
+      <ng-template #modify>
+        <mat-icon>edit</mat-icon>
+        <span>Modify Details</span>
+      </ng-template>
+    </button>
+  </div>
+</div>

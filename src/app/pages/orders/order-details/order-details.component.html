@@ -1,0 +1,140 @@
+<app-navigation>
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <app-head [head]="{ title: 'Order Details' }"> </app-head>
+        </div>
+      </div>
+
+      <mat-progress-bar
+        mode="indeterminate"
+        style="margin: 1rem auto"
+        color="warn"
+        *ngIf="loading"
+      ></mat-progress-bar>
+      <div class="row">
+        <div class="col-sm">
+          <mat-card style="margin: 1rem auto; width: 500px">
+            <mat-card-content>
+              <strong style="text-transform: uppercase; font-size: 0.7rem">
+                Order Number:
+              </strong>
+              <br />
+              <span
+                style="
+                  font-size: 1.6rem;
+                  font-weight: 300;
+                  font-family: 'Montserrat', sans-serif;
+                "
+              >
+                {{ orderNo }}
+              </span>
+              <hr />
+              <!-- <h5>Orderer</h5> -->
+              <div class="entry">
+                <strong>Sent By: </strong>
+                <span>
+                  {{ order.name }}
+                  <!-- <mat-icon id="customer-desc" *ngIf="customer">priority_high</mat-icon> -->
+                </span>
+              </div>
+              <div class="entry">
+                <strong>Phone: </strong>
+                <span>{{ order.phone }}</span>
+              </div>
+              <div class="entry" *ngIf="order.place || order.region">
+                <strong>Location: </strong>
+                <span>{{ order.deliveryAddress }}</span>
+              </div>
+              <div class="entry">
+                <strong>Status: </strong>
+                <span>{{ order.orderStatus }}</span>
+              </div>
+              <hr />
+              <!-- <h5>Order Details</h5> -->
+              <div class="entry">
+                <strong>Item Category:</strong>
+                <span>{{ order.itemCategory }}</span>
+              </div>
+              <div class="entry">
+                <strong>Item Name: </strong>
+                <span>{{ order.itemName }}</span>
+              </div>
+              <div class="entry">
+                <strong>Item Quantity: </strong>
+                <span>{{ order.item_quantity }}</span>
+              </div>
+              <div class="entry">
+                <!-- <strong>Flavours: </strong> -->
+                <!-- <span>{{itemFlavor}}</span> -->
+              </div>
+              <!-- <table class="table table-borderless">
+                <tr style="border-bottom:1px solid #3d3d3d30" *ngFor="let flavor of flavors">
+                  <td>{{flavor.flavor}}</td><td>-</td>
+                  <td>{{flavor.quantity}}</td>
+                </tr>
+              </table> -->
+              <!-- <mat-form-field appearance="fill" *ngIf="!covidInst" style="width: 100%; margin-top: 1rem;">
+                
+                <mat-label>{{'CARD.assignTo' | translate}}</mat-label>
+                <mat-select aria-describedby="assigned_to" [disabled]="!(ot==='')" [(ngModel)]="assigned_to">
+                  <mat-option *ngFor="let item of staff" [value]="item.ID || item.InstitutionCode">
+                    {{item.Firstname || item.InstitutionName}} {{item.Surname}}</mat-option>
+                </mat-select>
+              </mat-form-field> -->
+              <!-- <hr> -->
+              <!-- <div class="page-head-note" *ngIf="order.orderStatusId==3 && userType==='Kitchen'">
+                <span>Order ready for delivery.</span>
+              </div> -->
+              <div class="page-head-note" *ngIf="order.orderStatusId > 3">
+                <span
+                  >Order assigned to
+                  <strong>{{ order.delivery_agent }}</strong> for
+                  delivery.</span
+                >
+              </div>
+            </mat-card-content>
+            <mat-card-actions *ngIf="order.orderStatusId < 4">
+              <!-- <div class="entry" *ngIf="userType==='Admin'">
+                <mat-form-field appearance="fill" style="width: 100%;">
+                  <mat-label>{{'CARD.assignTo' | translate}}</mat-label>
+                  <mat-select aria-describedby="assigned_to" [disabled]="!(orderStatusId==3)" [(ngModel)]="assigned_to">
+                    <mat-option *ngFor="let item of staff" [value]="item">
+                      {{item.Firstname || item.InstitutionName}} {{item.Surname}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div> -->
+              <!-- <div class="row">
+                <div class="col-md">
+                  <div class="d-flex justify-content-center">
+                    <button color="primary" (click)="assignCase()" *ngIf="userType==='Admin'" [disabled]="!assigned_to || !(orderStatusId==3)" mat-raised-button>
+                      <mat-icon>assignment_turned_in</mat-icon>
+                      <span>Assign</span>
+                    </button>
+                    <button color="primary" (click)="done()" [disabled]="d || orderStatusId>2" *ngIf="userType==='Kitchen' &&orderStatusId==1" mat-raised-button>
+                      <mat-icon>done_all</mat-icon>
+                      <span *ngIf="orderStatusId<3">Order Ready</span>
+                      <span *ngIf="orderStatusId>2">{{p_status}}</span>
+                    </button>
+                  </div>
+                </div>
+              </div> -->
+            </mat-card-actions>
+          </mat-card>
+        </div>
+        <!-- End col-sm-7 -->
+      </div>
+
+      <div class="row">
+        <div class="container">
+          <mat-card style="margin-top: 1rem">
+            <mat-card-content>
+              <div #gmap style="width: 100%; height: 400px"></div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-navigation>

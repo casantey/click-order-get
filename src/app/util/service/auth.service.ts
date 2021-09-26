@@ -19,6 +19,10 @@ export class AuthService {
     return JSON.parse(localStorage.getItem('loggedIn') || 'false');
   }
 
+  get loggedIn() {
+    return !!localStorage.getItem('token');
+  }
+
   get getToken() {
     return localStorage.getItem('token');
   }

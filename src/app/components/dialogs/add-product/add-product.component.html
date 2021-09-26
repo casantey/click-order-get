@@ -1,0 +1,84 @@
+<div class="dialog-wrapper width-500">
+  <div class="title">New Product</div>
+  <div class="body">
+    <form [formGroup]="newProduct">
+      <mat-form-field appearance="outline">
+        <mat-label>Product Name</mat-label>
+        <input
+          matInput
+          formControlName="productName"
+          placeholder="Product Name"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <input
+          matInput
+          formControlName="productCategory"
+          placeholder="Product Category"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <input
+          matInput
+          formControlName="productDescription"
+          placeholder="Product Description"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Image</mat-label>
+        <input
+          matInput
+          formControlName="imageUrl"
+          placeholder="Link to product image"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Flavor Category</mat-label>
+        <mat-select formControlName="flavorsId">
+          <mat-option
+            *ngFor="let group of flavorGroups"
+            [value]="group.groupId"
+          >
+            {{group.flavorTitle}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="row">
+        <div class="col-md-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
+            <input matInput formControlName="currency" placeholder="Currency" />
+          </mat-form-field>
+        </div>
+        <div class="col-md">
+          <mat-form-field appearance="outline">
+            <mat-label>Unit Price</mat-label>
+            <input
+              matInput
+              formControlName="unitPrice"
+              placeholder="0.00"
+              type="number"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="actions">
+    <button mat-flat-button color="warn" (click)="onNoClick()">
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+    <button
+      mat-flat-button
+      color="primary"
+      [disabled]="newProduct.invalid"
+      [mat-dialog-close]="newProduct.value"
+    >
+      <mat-icon>add_business</mat-icon>
+      <span>Add Product</span>
+    </button>
+  </div>
+</div>
