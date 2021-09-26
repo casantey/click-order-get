@@ -36,6 +36,7 @@
     "randomstring": "^1.1.5",
     "request": "^2.88.2",
     "rotating-file-stream": "^2.1.5",
-    "xlsx": "^0.16.9"
+    "uuid": "^8.3.2",
+    "xlsx": "^0.17.2"
   }
 }
