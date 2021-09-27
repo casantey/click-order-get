@@ -28,7 +28,11 @@ router.post("/authenticate", (req, res) => {
       if (!error) {
         // WHEN THERE IS NO ERROR
         // console.log(rows);
-        if (rows.length === 0) return res.send(null);
+        if (rows.length === 0)
+          return res.status(404).send({
+            data: null,
+            message: "User does not exist",
+          });
         let r = rows[0];
         let payload = {
           ...r,

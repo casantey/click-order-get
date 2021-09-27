@@ -53,6 +53,7 @@ route.use("/store", require("./routes/store"));
 route.use("/vendor", require("./routes/vendor"));
 route.use("/flavor", require("./routes/flavor"));
 route.use("/product", require("./routes/product"));
+route.use("/attributes", require("./routes/attributes"));
 
 route.get("/", verifyToken, (req, res) => {
   res.send(

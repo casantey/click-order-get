@@ -62,7 +62,7 @@ function getVendor(data, cb) {
 function getFlavorGroups(data, cb) {
   console.log({ data });
   dbConn.query(
-    "SELECT * FROM productFlavorGroup WHERE groupId=TRIM(?); SELECT itemName FROM productFlavors WHERE flavorGroupId=TRIM(?); SELECT * FROM vendors WHERE vendorId=TRIM(?)",
+    "SELECT * FROM productFlavorGroup WHERE groupId=TRIM(?); SELECT itemName,itemPrice FROM productFlavors WHERE flavorGroupId=TRIM(?); SELECT * FROM vendors WHERE vendorId=TRIM(?)",
     [data.flavorsId, data.flavorsId, data.vendorId],
     (error, rows) => {
       if (error) {
@@ -84,7 +84,11 @@ function getFlavorGroups(data, cb) {
           latitude: vendor.latitude,
         },
         flavors: [
-          { flavorTitle: rows[0][0].flavorTitle, flavorItems: rows[1] },
+          {
+            flavorTitle: rows[0][0].flavorTitle,
+            allowMultiple: rows[0][0].allowMultiple,
+            flavorItems: rows[1],
+          },
         ],
       });
     }

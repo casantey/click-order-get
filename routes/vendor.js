@@ -55,17 +55,13 @@ router.put("/:id", (req, res) => {
             saveError(error);
             return res.status(500).send(error);
           }
-          async.map(
-            [{ ...rows[0], message: success.msg }],
-            getVendorProducts,
-            (error, response) => {
-              if (error) {
-                saveError({ error });
-              }
-              console.log({ response });
-              return res.send(response[0]);
+          async.map([{ ...rows[0] }], getVendorProducts, (error, response) => {
+            if (error) {
+              saveError({ error });
             }
-          );
+            console.log({ response });
+            return res.send(response[0]);
+          });
         }
       );
     }
@@ -89,17 +85,15 @@ router.get("/:id", (req, res) => {
       }
 
       // return res.status(200).send({ data: rows[0], message: success.msg });
-      async.map(
-        [{ ...rows[0], message: success.msg }],
-        getVendorProducts,
-        (error, response) => {
-          if (error) {
-            saveError({ error });
-          }
-          console.log({ response });
-          return res.send(response[0]);
+      async.map([{ ...rows[0] }], getVendorProducts, (error, response) => {
+        if (error) {
+          saveError({ error });
         }
-      );
+        console.log({ response });
+        return res
+          .status(200)
+          .send({ data: response[0], message: success.msg });
+      });
     }
   );
 });
@@ -156,7 +150,40 @@ function getVendorProducts(data, cb) {
       }
       // return res.status(200).send(rows);
       let send = { ...data, products: rows };
-      cb(null, { data: send });
+      async.map([send], getVendorAttributes, (error, response) => {
+        if (error) throw error;
+        cb(null, response[0]);
+      });
+    }
+  );
+}
+
+function getVendorAttributes(data, cb) {
+  dbConn.query(
+    "SELECT * FROM productFlavorGroup WHERE vendorId=TRIM(?)",
+    [data.vendorId],
+    (error, rows) => {
+      if (error) {
+        cb(error);
+      }
+      async.map(rows, getAttributes, (error, response) => {
+        if (error) {
+          saveError(error);
+          return res.status(500).send(error);
+        }
+        cb(null, { ...data, attributes: response });
+      });
+    }
+  );
+}
+
+function getAttributes(data, cb) {
+  dbConn.query(
+    "SELECT * FROM productFlavors WHERE flavorGroupId=TRIM(?) ORDER BY itemName",
+    [data.groupId],
+    (error, rows) => {
+      if (error) return cb(error);
+      return cb(null, { ...data, attributes: rows });
     }
   );
 }
