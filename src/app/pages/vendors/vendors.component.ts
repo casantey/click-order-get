@@ -1,22 +1,22 @@
-import { HttpEventType } from "@angular/common/http";
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { ToastrService } from "ngx-toastr";
-import { AddVendorComponent } from "src/app/components/dialogs/add-vendor/add-vendor.component";
-import { MapComponent } from "src/app/components/dialogs/map/map.component";
-import { Vendor } from "src/app/util/interfaces/vendor";
-import { DataService } from "src/app/util/service/data.service";
+import { HttpEventType } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { ToastrService } from 'ngx-toastr';
+import { AddVendorComponent } from 'src/app/components/dialogs/add-vendor/add-vendor.component';
+import { MapComponent } from 'src/app/components/dialogs/map/map.component';
+import { Vendor } from 'src/app/util/interfaces/vendor';
+import { DataService } from 'src/app/util/service/data.service';
 
 @Component({
-  selector: "app-vendors",
-  templateUrl: "./vendors.component.html",
-  styleUrls: ["./vendors.component.scss"],
+  selector: 'app-vendors',
+  templateUrl: './vendors.component.html',
+  styleUrls: ['./vendors.component.scss'],
 })
 export class VendorsComponent implements OnInit {
-  displayedColumns: string[] = ["vendorName", "dateAdded", "action"];
+  displayedColumns: string[] = ['vendorName', 'dateAdded', 'action'];
   dataSource: MatTableDataSource<Vendor>;
   vendors: Vendor[] = [];
   loading = false;
@@ -51,7 +51,22 @@ export class VendorsComponent implements OnInit {
   addVendorDialog() {
     this.loading = true;
 
-    const dialogRef = this._dialog.open(AddVendorComponent);
+    const dialogRef = this._dialog.open(AddVendorComponent, {
+      data: {
+        vendor: {
+          vendorId: '',
+          vendorName: '',
+          vendorDescription: '',
+          vendorLogo: '',
+          vendorPhone: '',
+          vendorEmail: '',
+          vendorStatus: false,
+          latitude: 0,
+          longitude: 0,
+        },
+        type: 'add',
+      },
+    });
 
     dialogRef.afterClosed().subscribe(
       (response) => {
@@ -60,7 +75,7 @@ export class VendorsComponent implements OnInit {
         }
       },
       (error) => {
-        this.toast.error("Could not finish operation", "Unknown Error");
+        this.toast.error('Could not finish operation', 'Unknown Error');
         console.log({ error });
       },
       () => {
@@ -71,7 +86,7 @@ export class VendorsComponent implements OnInit {
 
   addVendor(data: Vendor) {
     this.loading = true;
-    this.toast.info("Adding vendor to collection");
+    this.toast.info('Adding vendor to collection');
 
     this._data.addVendor(data).subscribe(
       (response) => {
@@ -79,15 +94,15 @@ export class VendorsComponent implements OnInit {
           this.toast.clear();
           switch (response.status) {
             case 201:
-              this.toast.success("Vendor added to collection");
+              this.toast.success('Vendor added to collection');
               let res = response.body;
               this.vendors.push(res.data);
               this.setTable(this.vendors);
               break;
             default:
               this.toast.warning(
-                "Could not add vendor to collection",
-                "Unknown Error"
+                'Could not add vendor to collection',
+                'Unknown Error'
               );
               console.log({ response: response.body });
               break;
@@ -95,7 +110,7 @@ export class VendorsComponent implements OnInit {
         }
       },
       (error) => {
-        this.toast.error("Could not add vendor to collection");
+        this.toast.error('Could not add vendor to collection');
         console.log({ error });
       },
       () => {
@@ -106,7 +121,7 @@ export class VendorsComponent implements OnInit {
 
   getVendors() {
     this.loading = true;
-    this.toast.info("Getting vendors...");
+    this.toast.info('Getting vendors...');
 
     this._data.getVendors().subscribe(
       (response) => {
@@ -118,7 +133,7 @@ export class VendorsComponent implements OnInit {
         }
       },
       (error) => {
-        this.toast.error("Could not get vendors...");
+        this.toast.error('Could not get vendors...');
         console.log({ error });
       },
       () => {

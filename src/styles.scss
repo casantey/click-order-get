@@ -106,10 +106,12 @@ app-head {
 }
 .warn-info {
   background-color: #ffd74030;
+  border: 1px solid #ffd740;
   border-left: 4px solid #ffd740;
 }
 .error-info {
   background-color: rgba(244, 67, 54, 0.3);
+  border: 1px solid #f44336;
   border-left: 4px solid #f44336;
 }
 
@@ -122,6 +124,12 @@ app-head {
   }
   .body {
     margin-top: 1rem;
+    max-height: 750px;
+    .sub {
+      max-height: 600px;
+      padding: 1rem;
+      overflow: scroll;
+    }
   }
   .actions {
     display: flex;
@@ -135,6 +143,9 @@ app-head {
 
 .width-500 {
   width: 500px;
+}
+.width-700 {
+  width: 700px;
 }
 
 .table-foot {

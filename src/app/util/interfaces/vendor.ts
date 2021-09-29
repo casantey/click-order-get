@@ -12,4 +12,5 @@ export interface Vendor {
   longitude: number;
   dateAdded: string;
   products?: Product[];
+  attributes?: any[];
 }
