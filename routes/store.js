@@ -17,7 +17,9 @@ router.get("/products", (req, res) => {
   dbConn.query("SELECT * FROM products", (error, rows) => {
     if (error) {
       saveError(error);
-      return res.status(500).send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // return res.status(200).send(rows);
     async.map(rows, getFlavorGroups, (err, response) => {

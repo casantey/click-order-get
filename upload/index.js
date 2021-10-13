@@ -128,6 +128,7 @@ route.use("/vendor", require("./routes/vendor"));
 route.use("/flavor", require("./routes/flavor"));
 route.use("/product", require("./routes/product"));
 route.use("/attributes", require("./routes/attributes"));
+route.use("/applications", require("./routes/applications"));
 
 serve.get("/", verifyToken, (req, res) => {
   res.send(
@@ -165,7 +166,7 @@ route.post("/api-z/getInstitutions", verifyToken, (req, res) => {
     } else {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      res.send(error);
+      res.status(400).send({ error, message: "Could not complete Action" });
     }
   });
 }); // END route
@@ -183,7 +184,9 @@ route.post("/api-z/newOrder", (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       functions.saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send({ code: 200, msg: "Order created successfully!" });
@@ -202,7 +205,7 @@ route.get("/api-z/order/:id", (req, res) => {
       } else {
         //when there is an error
         saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
     }
   );
@@ -234,7 +237,9 @@ route.post("/api-z/order", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         functions.saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       // WHEN THERE IS NO ERROR
       res.send({ code: 200, msg: "Order created successfully!" });
@@ -250,7 +255,9 @@ route.get("/api-z/menu/cate/:inst", verifyToken, (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -265,7 +272,9 @@ route.get("/api-z/menu/categories/:inst", verifyToken, (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -280,7 +289,9 @@ route.get("/api-z/orders/:phone", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         functions.saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -318,7 +329,9 @@ route.post("/api-z/createNewStaff", verifyToken, (req, res) => {
       if (error) {
         //when there is an error
         func.saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       // WHEN THERE IS NO ERROR
       dbConn.query(
@@ -337,7 +350,9 @@ route.post("/api-z/createNewStaff", verifyToken, (req, res) => {
           if (error) {
             // WHEN THERE IS AN ERROR
             func.saveError(error);
-            return res.send(error);
+            return res
+              .status(400)
+              .send({ error, message: "Could not complete Action" });
           }
           res.send({ code: 200, msg: "Staff member created successfully!" });
         }
@@ -356,7 +371,7 @@ route.get("/api-z/getAllStaffOf/:id", verifyToken, (req, res) => {
       if (error) {
         //when there is an error
         saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
       // WHEN THERE IS NO ERROR
       res.send(rows);
@@ -373,7 +388,9 @@ route.get("/api-z/getStaffType/:inst/:type", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -400,7 +417,7 @@ route.put("/api-z/editStaff", verifyToken, (req, res) => {
       if (error) {
         //when there is no error
         saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
       //  WHEN THERE IS NO ERROR
       dbConn.query(
@@ -410,7 +427,9 @@ route.put("/api-z/editStaff", verifyToken, (req, res) => {
           if (error) {
             // WHEN THERE IS AN ERROR
             saveError(error);
-            return res.send(error);
+            return res
+              .status(400)
+              .send({ error, message: "Could not complete Action" });
           }
           // WHEN THERE IS NO ERROR
           res.send({ code: 200, msg: "Staff details modified successfully" });
@@ -439,7 +458,7 @@ route.get("/api-z/getAdmins", verifyToken, (req, res) => {
     } else {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      res.send(error);
+      res.status(400).send({ error, message: "Could not complete Action" });
     }
   });
 }); // END METHOD
@@ -464,7 +483,7 @@ route.post("/api-z/webUsers", verifyToken, (req, res) => {
     } else {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      res.send(error);
+      res.status(400).send({ error, message: "Could not complete Action" });
     }
   });
 }); // END route
@@ -490,10 +509,11 @@ route.post("/api-z/createWebUser", verifyToken, (req, res) => {
         res.send(success);
       } else {
         // WHEN THERE IS AN ERROR
-        if (error.code === "ER_DUP_ENTRY") res.send(error);
+        if (error.code === "ER_DUP_ENTRY")
+          res.status(400).send({ error, message: "Could not complete Action" });
         else {
           saveError(error);
-          res.send(error);
+          res.status(400).send({ error, message: "Could not complete Action" });
         }
       }
     }
@@ -539,7 +559,7 @@ route.put("/api-z/updateInstitution", verifyToken, (req, res) => {
     } else {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      res.send(error);
+      res.status(400).send({ error, message: "Could not complete Action" });
     }
   });
 }); // END route
@@ -565,7 +585,7 @@ route.put("/api-z/updateWebUser", verifyToken, (req, res) => {
       } else {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
     }
   );
@@ -625,7 +645,9 @@ route.get("/api-z/institutionDetails/:inst", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -639,7 +661,9 @@ route.get("/api-z/getInstHead", verifyToken, (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -706,7 +730,9 @@ route.get("/api-z/institutionDetails/:inst", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -720,7 +746,9 @@ route.get("/api-z/getInstHead", verifyToken, (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -778,14 +806,16 @@ route.post("/api-z/authenticateWebUser", (req, res) => {
             } else {
               // WHEN THERE IS AN ERROR
               saveError(error);
-              res.send(error);
+              res
+                .status(400)
+                .send({ error, message: "Could not complete Action" });
             }
           }
         );
       } else {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
     }
   );
@@ -799,7 +829,9 @@ route.get("/api-z/order/all/today", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         functions.saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       // WHEN THERE IS NO ERROR
       res.send(rows);
@@ -814,7 +846,9 @@ route.get("/api-z/orders", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         functions.saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       // WHEN THERE IS NO ERROR
       res.send(rows);

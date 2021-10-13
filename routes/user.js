@@ -14,7 +14,23 @@ var success = {
 /** AUTHENTICATE WEB USER */
 router.post("/authenticate", (req, res) => {
   let body = req.body;
-  console.info("Logging in: ", body);
+  console.info("Logging in: ", { body });
+  if (!body.username) {
+    console.log("No username");
+    return res.status(400).send({
+      data: null,
+      "Request Body": body,
+      message: "Username does not appear to be in data sent.",
+    });
+  }
+  if (!body.password) {
+    console.log("No password");
+    return res.status(400).send({
+      data: null,
+      "Request Body": body,
+      message: "Password does not appear to be in data sent.",
+    });
+  }
   const ip =
     (req.headers["x-forwarded-for"] || "").split(",").pop().trim() ||
     req.connection.remoteAddress ||
@@ -56,14 +72,16 @@ router.post("/authenticate", (req, res) => {
             } else {
               // WHEN THERE IS AN ERROR
               saveError(error);
-              res.send(error);
+              res
+                .status(400)
+                .send({ error, message: "Could not complete Action" });
             }
           }
         );
       } else {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
     }
   );

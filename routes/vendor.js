@@ -18,7 +18,9 @@ router.get("/all", (req, res) => {
   dbConn.query("SELECT * FROM vendors ORDER BY vendorName", (error, rows) => {
     if (error) {
       saveError(error);
-      return res.status(500).send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.status(200).send(rows);
   });
@@ -44,7 +46,7 @@ router.put("/:id", (req, res) => {
       if (error) {
         saveError(error);
         return res
-          .status(500)
+          .status(400)
           .send({ error, message: "Could not update vendor details" });
       }
       dbConn.query(
@@ -53,7 +55,9 @@ router.put("/:id", (req, res) => {
         (error, rows) => {
           if (error) {
             saveError(error);
-            return res.status(500).send(error);
+            return res
+              .status(400)
+              .send({ error, message: "Could not complete Action" });
           }
           async.map([{ ...rows[0] }], getVendorProducts, (error, response) => {
             if (error) {
@@ -80,7 +84,7 @@ router.get("/:id", (req, res) => {
       if (error) {
         saveError(error);
         return res
-          .status(500)
+          .status(400)
           .send({ error, message: "Could not get vendor details" });
       }
 
@@ -119,7 +123,9 @@ router.post("/", (req, res) => {
     (error, rows) => {
       if (error) {
         saveError(error);
-        return res.status(500).send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       dbConn.query(
         "SELECT * FROM vendors WHERE vendorId=TRIM(?)",
@@ -127,7 +133,9 @@ router.post("/", (req, res) => {
         (error, rows) => {
           if (error) {
             saveError(error);
-            return res.status(500).send(error);
+            return res
+              .status(400)
+              .send({ error, message: "Could not complete Action" });
           }
 
           return res.status(201).send({ data: rows[0], message: success.msg });
@@ -169,7 +177,9 @@ function getVendorAttributes(data, cb) {
       async.map(rows, getAttributes, (error, response) => {
         if (error) {
           saveError(error);
-          return res.status(500).send(error);
+          return res
+            .status(400)
+            .send({ error, message: "Could not complete Action" });
         }
         cb(null, { ...data, attributes: response });
       });

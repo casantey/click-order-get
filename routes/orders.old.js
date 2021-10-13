@@ -34,7 +34,9 @@ router.get("/assignment/:id", verifyToken, (req, res) => {
               } else {
                 // WHEN THERE IS AN ERROR
                 func.saveError(error);
-                res.send(error);
+                res
+                  .status(400)
+                  .send({ error, message: "Could not complete Action" });
               }
             }
           );
@@ -42,7 +44,7 @@ router.get("/assignment/:id", verifyToken, (req, res) => {
       } else {
         // WHEN THERE IS AN ERROR
         func.saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
     }
   );
@@ -56,7 +58,9 @@ router.get("/phone/:phone", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -73,7 +77,9 @@ router.get("/today", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send(rows);
@@ -90,7 +96,9 @@ router.get("/all", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send(rows);
@@ -108,7 +116,9 @@ router.get("/order/:id", verifyToken, (req, res) => {
       if (error) {
         //when there is an error
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       return res.send(rows[0]);
     }
@@ -153,7 +163,9 @@ router.post("/assign", verifyToken, (req, res) => {
             } else {
               //when there is an error
               func.saveError(error);
-              res.send(error);
+              res
+                .status(400)
+                .send({ error, message: "Could not complete Action" });
             }
           }
         );
@@ -178,21 +190,25 @@ router.post("/assign", verifyToken, (req, res) => {
                     } else {
                       // WHEN THERE IS AN ERROR
                       func.saveError(error);
-                      res.send(error);
+                      res
+                        .status(400)
+                        .send({ error, message: "Could not complete Action" });
                     }
                   }
                 );
               } else {
                 // WHEN THERE IS AN ERROR
                 func.saveError(error);
-                res.send(error);
+                res
+                  .status(400)
+                  .send({ error, message: "Could not complete Action" });
               }
             }
           );
         } else {
           // WHEN THERE IS AN ERROR
           func.saveError(error);
-          res.send(error);
+          res.status(400).send({ error, message: "Could not complete Action" });
         }
       }
     }
@@ -207,7 +223,7 @@ router.post("/done", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         functions.saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
       // WHEN THERE IS NO ERROR
       res.send({ code: 200, msg: "Order status updated successfully" });
@@ -265,7 +281,9 @@ router.post("/order", (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send({ code: 200, msg: "Order created successfully!" });
@@ -313,7 +331,9 @@ router.post("/", verifyToken, (req, res) => {
       // WHEN THERE IS AN ERROR
       console.log({ error });
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send(rows);
@@ -328,7 +348,9 @@ router.delete("/:id", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       if (rows.affectedRows === 0)
         return res.send({

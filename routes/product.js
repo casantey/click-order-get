@@ -17,7 +17,9 @@ router.get("/all", (req, res) => {
   dbConn.query("SELECT * FROM products ORDER BY productName", (error, rows) => {
     if (error) {
       saveError(error);
-      return res.status(500).send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.status(200).send(rows);
   });
@@ -45,7 +47,9 @@ router.post("/", (req, res) => {
     (error, rows) => {
       if (error) {
         saveError(error);
-        return res.status(500).send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       dbConn.query(
         "SELECT * FROM products WHERE productId=TRIM(?)",
@@ -53,7 +57,9 @@ router.post("/", (req, res) => {
         (error, rows) => {
           if (error) {
             saveError(error);
-            return res.status(500).send(error);
+            return res
+              .status(400)
+              .send({ error, message: "Could not complete Action" });
           }
 
           return res.status(201).send({ data: rows[0], message: success.msg });

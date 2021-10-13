@@ -1,12 +1,23 @@
 const express = require("express");
 var router = express.Router();
 var dbConn = require("../dbConn");
+const async = require("async");
+const { v4: uuidv4 } = require("uuid");
+let incrementer = require("number-sequence");
+let numsys = "0123456789ABCDEF";
+let padChar = "res-";
+let length = 2;
 const {
   verifyToken,
   saveError,
   getDateToday,
   saveQuery,
 } = require("../functions");
+
+// let result = incrementer.increment(
+//   numsys,
+//   incrementer.padNumberToLength("E", length, padChar)
+// );
 
 var success = {
   code: 200,
@@ -34,7 +45,9 @@ router.get("/assignment/:id", verifyToken, (req, res) => {
               } else {
                 // WHEN THERE IS AN ERROR
                 func.saveError(error);
-                res.send(error);
+                res
+                  .status(400)
+                  .send({ error, message: "Could not complete Action" });
               }
             }
           );
@@ -42,7 +55,7 @@ router.get("/assignment/:id", verifyToken, (req, res) => {
       } else {
         // WHEN THERE IS AN ERROR
         func.saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
     }
   );
@@ -56,7 +69,9 @@ router.get("/phone/:phone", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       res.send(rows);
     }
@@ -73,7 +88,9 @@ router.get("/today", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send(rows);
@@ -90,7 +107,9 @@ router.get("/all", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send(rows);
@@ -102,13 +121,15 @@ router.get("/order/:id", verifyToken, (req, res) => {
   console.log("Getting order details...", { id });
 
   dbConn.query(
-    `SELECT a.*,DATE_FORMAT(a.dateCreated, "%Y-%m-%d %H:%i:%s") date_time,b.orderStatusId, c.Fullname delivery_agent_name,b.orderStatus orderStatus FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId LEFT JOIN web_user c ON a.delivery_agent=c.user_id WHERE a.orderNo=TRIM(?) ORDER BY dateCreated DESC`,
+    `SELECT a.*,DATE_FORMAT(a.dateCreated, "%Y-%m-%d %H:%i:%s") date_time,b.orderStatusId, c.Fullname deliveryAgent_name,b.orderStatus orderStatus FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId LEFT JOIN web_user c ON a.deliveryAgent=c.user_id WHERE a.orderNo=TRIM(?) ORDER BY dateCreated DESC`,
     [req.params.id],
     (error, rows) => {
       if (error) {
         //when there is an error
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       return res.send(rows[0]);
     }
@@ -130,7 +151,7 @@ router.post("/assign", verifyToken, (req, res) => {
       if (!error) {
         //when there is no error
         dbConn.query(
-          'UPDATE orders SET orderStatus="4", delivery_agent=TRIM(?) WHERE orderNo=TRIM(?)',
+          'UPDATE orders SET orderStatus="4", deliveryAgent=TRIM(?) WHERE orderNo=TRIM(?)',
           [assign.assigned_to, assign.case_id],
           (error, rows) => {
             if (error) {
@@ -153,7 +174,9 @@ router.post("/assign", verifyToken, (req, res) => {
             } else {
               //when there is an error
               func.saveError(error);
-              res.send(error);
+              res
+                .status(400)
+                .send({ error, message: "Could not complete Action" });
             }
           }
         );
@@ -178,21 +201,25 @@ router.post("/assign", verifyToken, (req, res) => {
                     } else {
                       // WHEN THERE IS AN ERROR
                       func.saveError(error);
-                      res.send(error);
+                      res
+                        .status(400)
+                        .send({ error, message: "Could not complete Action" });
                     }
                   }
                 );
               } else {
                 // WHEN THERE IS AN ERROR
                 func.saveError(error);
-                res.send(error);
+                res
+                  .status(400)
+                  .send({ error, message: "Could not complete Action" });
               }
             }
           );
         } else {
           // WHEN THERE IS AN ERROR
           func.saveError(error);
-          res.send(error);
+          res.status(400).send({ error, message: "Could not complete Action" });
         }
       }
     }
@@ -207,7 +234,7 @@ router.post("/done", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         functions.saveError(error);
-        res.send(error);
+        res.status(400).send({ error, message: "Could not complete Action" });
       }
       // WHEN THERE IS NO ERROR
       res.send({ code: 200, msg: "Order status updated successfully" });
@@ -215,60 +242,94 @@ router.post("/done", (req, res) => {
   ); // END SERVE
 });
 
+let testOrderNumber = 0;
+console.log({ testOrderNumber });
+
 router.post("/order", (req, res) => {
-  let bod = req.body;
+  let data = req.body;
+  console.log((testOrderNumber += 1));
+  console.log("New order: ", { data });
+  // let orderNo= bod.orderStatusId === 7 ? getDateToday("FULL-ID") : bod.orderNo;
+
+  let orderNo = getDateToday("FULL-ID");
+
   // console.log({ bod });
-  let id = bod.orderStatusId === 7 ? getDateToday("FULL-ID") : bod.orderNo;
-  let qty = bod.itemQuantity ? bod.itemQuantity : bod.item_quantity;
-  let delCharge = bod.delivery_price ? bod.delivery_price : bod.deliveryCharge;
-  let query = `INSERT INTO orders (orderNo,orderSource,phone,name,email,itemCategory,itemName,itemPrice,itemFlavors,item_quantity,deliveryAddress,orderLong,orderLat,clientReference,institution,delivery_price,orderStatus,itemFlavorsQty,dateCreated) VALUES
-	(
-		TRIM('${id}'),
-		TRIM('${bod.orderSource}'),
-		TRIM('${bod.phone}'),
-		TRIM('${bod.name}'),
-		TRIM('${bod.email}'),
-		TRIM('${bod.itemCategory}'),
-		TRIM('${bod.itemName}'),
-		TRIM(${bod.itemPrice}),
-		TRIM('${bod.itemFlavors}'),
-		TRIM(${qty}),
-		TRIM('${bod.deliveryAddress}'),
-		TRIM(${bod.orderLong}),
-		TRIM(${bod.orderLat}),
-		TRIM('${bod.clientReference}'),
-		TRIM('${bod.institution}'),
-		TRIM(${delCharge ? delCharge : 0}),
-		TRIM('${bod.orderStatus}'),
-		TRIM('${bod.itemFlavorsQty}'),
-		NOW()
-	) ON DUPLICATE KEY UPDATE 
-		orderSource=TRIM('${bod.orderSource}'),
-		phone=TRIM('${bod.phone}'),
-		name=TRIM('${bod.name}'),
-		email=TRIM('${bod.email}'),
-		itemCategory=TRIM('${bod.itemCategory}'),
-		itemName=TRIM('${bod.itemName}'),
-		itemPrice=TRIM(${bod.itemPrice}),
-		itemFlavors=TRIM('${bod.itemFlavors}'),
-		item_quantity=TRIM(${qty}),
-		deliveryAddress=TRIM('${bod.deliveryAddress}'),
-		orderLong=TRIM(${bod.orderLong}),
-		orderLat=TRIM(${bod.orderLat}),
-		clientReference=TRIM('${bod.clientReference}'),
-		institution=TRIM('${bod.institution}'),
-		delivery_price=TRIM(${delCharge ? delCharge : 0}),
-		orderStatus=TRIM('${bod.orderStatus}'),
-		itemFlavorsQty=TRIM('${bod.itemFlavorsQty}'),
-		dateCreated=NOW()`;
+  let query = "";
+  for (let i = 0; i < data.length; i++) {
+    let bod = data[i];
+    let id = uuidv4();
+    query += `INSERT INTO orders (id,orderNo,itemId,orderSource,phone,name,email,itemCategory,itemName,itemPrice,itemFlavors,itemQuantity,deliveryAddress,orderLong,orderLat,clientReference,vendorId,deliveryAmount,orderStatus,dateCreated) VALUES
+    (TRIM('${id}'),TRIM('${orderNo}'),TRIM('${bod.itemId}'),TRIM('${
+      bod.orderSource
+    }'),TRIM('${bod.phone}'),TRIM('${bod.name}'),TRIM('${bod.email}'),TRIM('${
+      bod.itemCategory
+    }'),TRIM('${bod.itemName}'),TRIM(${bod.itemPrice}),
+    TRIM('${JSON.stringify(bod.itemFlavors)}')
+    ,TRIM(${bod.itemQuantity}),TRIM('${bod.deliveryAddress}'),TRIM(${
+      bod.orderLong
+    }),TRIM(${bod.orderLat}),TRIM('${bod.clientReference}'),TRIM('${
+      bod.vendorId
+    }'),TRIM(${bod.deliveryAmount}),TRIM('${
+      bod.orderStatus
+    }'),NOW()) ON DUPLICATE KEY UPDATE orderSource=TRIM('${
+      bod.orderSource
+    }'),phone=TRIM('${bod.phone}'),name=TRIM('${bod.name}'),email=TRIM('${
+      bod.email
+    }'),itemCategory=TRIM('${bod.itemCategory}'),itemName=TRIM('${
+      bod.itemName
+    }'),itemPrice=TRIM(${bod.itemPrice}),itemId=TRIM('${
+      bod.itemId
+    }'),itemFlavors=TRIM('${JSON.stringify(
+      bod.itemFlavors
+    )}'),itemQuantity=TRIM(${bod.itemQuantity}),deliveryAddress=TRIM('${
+      bod.deliveryAddress
+    }'),orderLong=TRIM(${bod.orderLong}),orderLat=TRIM(${
+      bod.orderLat
+    }),clientReference=TRIM('${bod.clientReference}'),vendorId=TRIM('${
+      bod.vendorId
+    }'),deliveryAmount=TRIM(${bod.deliveryAmount}),orderStatus=TRIM('${
+      bod.orderStatus
+    }'),dateCreated=NOW();`;
+  }
   dbConn.query(query, (error, rows) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res.status(400).send({ error, message: "Could not add order(s)" });
     }
     // WHEN THERE IS NO ERROR
-    res.send({ code: 200, msg: "Order created successfully!" });
+    dbConn.query(
+      "SELECT a.*, b.orderStatus,b.orderStatusId FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId WHERE orderNo=TRIM(?)",
+      [orderNo],
+      (error, rows) => {
+        if (error) {
+          // WHEN THERE IS AN ERROR
+          saveError(error);
+          return res
+            .status(400)
+            .send({ error, message: "Could not get order(s)" });
+        }
+        async.map(rows, getVendorDetails, (error, response) => {
+          if (error) {
+            saveError(error);
+            return res
+              .status(500)
+              .send({ error, message: "Could not get vendor details" });
+          }
+          async.map(response, getProductDetails, (error, response) => {
+            if (error) {
+              saveError(error);
+              return res
+                .status(500)
+                .send({ error, message: "Could not get product details" });
+            }
+            return res
+              .status(201)
+              .send({ data: response, message: "Order(s) created" });
+          });
+        });
+      }
+    );
   });
 });
 
@@ -313,7 +374,9 @@ router.post("/", verifyToken, (req, res) => {
       // WHEN THERE IS AN ERROR
       console.log({ error });
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     // WHEN THERE IS NO ERROR
     res.send(rows);
@@ -328,7 +391,9 @@ router.delete("/:id", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       if (rows.affectedRows === 0)
         return res.send({
@@ -341,3 +406,29 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router;
+
+function getVendorDetails(data, cb) {
+  console.log("Getting vendor details...", { vendor: data.vendorId });
+
+  dbConn.query(
+    "SELECT * FROM vendors WHERE vendorId=TRIM(?);",
+    [data.vendorId],
+    (error, rows) => {
+      if (error) return cb(error);
+      return cb(null, { ...data, vendor: rows[0] });
+    }
+  );
+}
+
+function getProductDetails(data, cb) {
+  console.log("Getting product details", { product: data.itemId });
+
+  dbConn.query(
+    "SELECT * FROM products WHERE productId = TRIM(?)",
+    [data.itemId],
+    (error, rows) => {
+      if (error) return cb(error);
+      return cb(null, { ...data, product: rows[0] });
+    }
+  );
+}

@@ -23,7 +23,9 @@ router.get("/statistics/:id", (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       let returnBody = {};
       returnBody.assigned = rows[0][0].assigned;
@@ -37,7 +39,7 @@ router.get("/statistics/:id", (req, res) => {
   // 	if (error) {
   // 		// WHEN THERE'S AND ERROR
   // 		saveError(error);
-  // 		return res.send(error);
+  // 		return res.status(400).send({error,message:"Could not complete Action"});
   // 	}
   // 	if (rows.length === 0) return res.send({code: 404, msg: "Could not find any drivers matching this phone number"});
   // 	// GET STATISTICS
@@ -51,7 +53,9 @@ router.get("/pending/:id", (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     res.send(rows);
   });
@@ -65,7 +69,9 @@ router.get("/locations", verifyToken, (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       return res.send(rows);
     }
@@ -80,7 +86,9 @@ router.get("/range", verifyToken, (req, res) => {
       if (error) {
         // WHEN THERE IS AN ERROR
         saveError(error);
-        return res.send(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not complete Action" });
       }
       return res.send(rows);
     }
@@ -95,7 +103,9 @@ router.delete("/location/:id", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.send(success);
   });
@@ -109,7 +119,9 @@ router.delete("/range/:id", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.send(success);
   });
@@ -129,7 +141,9 @@ router.put("/location/:id", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.send(success);
   });
@@ -148,7 +162,9 @@ router.put("/range/:id", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.send(success);
   });
@@ -170,7 +186,9 @@ router.post("/location", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.send(success);
   });
@@ -184,7 +202,9 @@ router.post("/range", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     return res.send(success);
   });
@@ -227,7 +247,9 @@ router.post("/duplicate", verifyToken, (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     res.send(success);
   });
@@ -241,7 +263,9 @@ router.post("/update", (req, res) => {
     if (error) {
       // WHEN THERE IS AN ERROR
       saveError(error);
-      return res.send(error);
+      return res
+        .status(400)
+        .send({ error, message: "Could not complete Action" });
     }
     dbConn.query(
       `UPDATE orders SET orderStatus=TRIM(?) WHERE orderNo=TRIM(?)`,
@@ -250,54 +274,14 @@ router.post("/update", (req, res) => {
         if (error) {
           // WHEN THERE IS AN ERROR
           saveError(error);
-          return res.send(error);
+          return res
+            .status(400)
+            .send({ error, message: "Could not complete Action" });
         }
         res.send({ code: 200, msg: "Order updated" });
       }
     );
   });
-});
-
-router.post("/register", (req, res) => {
-  let data = req.body;
-  console.log("New delivery application...", { data });
-
-  let id = uuidv4();
-
-  dbConn.query(
-    "INSERT INTO restaurants.applications (id,applicantFirstName,applicantLastName,applicantMiddleName,gender,dateOfBirth,contactEmail,contactPhone,image) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?));",
-    [
-      id,
-      data.applicantFirstName,
-      data.applicantLastName,
-      data.applicantMiddlename,
-      data.gender,
-      data.dateOfBirth,
-      data.contactEmail,
-      data.contactPhone,
-      data.image,
-    ],
-    (error, rows) => {
-      if (error) {
-        saveError(error);
-        return res.status(500).send(error);
-      }
-      dbConn.query(
-        "SELECT * FROM applications WHERE id=TRIM(?)",
-        [id],
-        (error, rows) => {
-          if (error) {
-            saveError(error);
-            return res.status(500).send(error);
-          }
-          return res.status(201).send({
-            data: rows[0],
-            message: "Application created successfully",
-          });
-        }
-      );
-    }
-  );
 });
 
 module.exports = router;
