@@ -13,6 +13,9 @@ function connectDatabase() {
       password: config.pwd,
       database: config.db,
       multipleStatements: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
 
     dbConn.connect((error) => {
