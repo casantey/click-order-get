@@ -857,7 +857,8 @@ route.get("/api-z/orders", (req, res) => {
 });
 
 //Launch service
-route.listen(10484, (error) => {
+const port = process.env.PORT || 10484;
+route.listen(port, (error) => {
   if (!error) {
     //when there is no error
     console.log(
@@ -867,7 +868,7 @@ route.listen(10484, (error) => {
     );
     console.log(
       chalk.hex("#4d9ebe")(
-        `The router started running on port 10484 at ${chalk.bold(
+        `The router started running on port ${port} at ${chalk.bold(
           getDateToday()
         )}`
       )

@@ -721,7 +721,7 @@ route.get("/api-z/orders", (req, res) => {
 });
 
 //Launch service
-const port = 10484;
+const port = process.env.PORT || 10484;
 route.listen(port, (error) => {
   if (!error) {
     //when there is no error
