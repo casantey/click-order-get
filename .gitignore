@@ -1,9 +1,9 @@
 .env
 cssrms.sql
-/log
-/error_logs
-/.temp
-/scripts
-/reports
+/log/*
+/error_logs/*
+/.temp/*
+/scripts/*
+/reports/*
 /node_modules
 package-lock.json
