@@ -56,7 +56,7 @@ route.use("/product", require("./routes/product"));
 route.use("/attributes", require("./routes/attributes"));
 route.use("/applications", require("./routes/applications"));
 
-route.get("/", verifyToken, (req, res) => {
+route.get("/", (req, res) => {
   res.send(
     "<h1 class='text-center' style='font-family: Montserrat;'>" +
       rootMsg[0]["message"] +
