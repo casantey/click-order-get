@@ -37,6 +37,11 @@ var logDirectory = path.join(__dirname, ".temp");
 // ensure log directory exists
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
 
+var success = {
+  code: 200,
+  msg: "Action completed successfully!",
+};
+
 var route = express();
 route.use(bodyParser.json()); //parse all requests to JSON format
 route.use(cors()); //for cross-origin access
@@ -57,11 +62,7 @@ route.use("/attributes", require("./routes/attributes"));
 route.use("/applications", require("./routes/applications"));
 
 route.get("/", (req, res) => {
-  res.send(
-    "<h1 class='text-center' style='font-family: Montserrat;'>" +
-      rootMsg[0]["message"] +
-      "</h1>"
-  );
+  res.status(200).send(success);
 }); //END route
 route.get("/api-z", verifyToken, (req, res) => {
   res.send(
