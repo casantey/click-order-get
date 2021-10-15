@@ -51,6 +51,6 @@ function connectDatabase() {
 
 module.exports = connectDatabase();
 
-dbConn.on("error", (err) => {
-  console.log({ err });
-});
+setInterval(function () {
+  dbConn.query("SELECT 1");
+}, 5000);
