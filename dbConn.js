@@ -45,6 +45,10 @@ function connectDatabase() {
         );
       }
     }); //END dbConn
+  } else {
+    dbConn.on("error", (err) => {
+      console.log({ err });
+    });
   }
   return dbConn;
 }
