@@ -52,5 +52,10 @@ function connectDatabase() {
 module.exports = connectDatabase();
 
 setInterval(function () {
-  dbConn.query("SELECT 1");
+  dbConn.query("SELECT 1", (err, rows) => {
+    if (err) {
+      console.log({ err });
+    }
+    console.log({ date: functions.getDateToday(), rows });
+  });
 }, 5000);
