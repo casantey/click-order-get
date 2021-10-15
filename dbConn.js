@@ -52,7 +52,7 @@ function connectDatabase() {
 module.exports = connectDatabase();
 
 setInterval(function () {
-  dbConn.query("SELECT 1", (err, rows) => {
+  dbConn.query("SELECT CURDATE()", (err, rows) => {
     if (err) {
       console.log({ err });
     }
