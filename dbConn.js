@@ -58,4 +58,4 @@ setInterval(function () {
     }
     console.log({ date: functions.getDateToday(), rows });
   });
-}, 5000);
+}, 3500);
