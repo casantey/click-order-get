@@ -51,11 +51,11 @@ function connectDatabase() {
 
 module.exports = connectDatabase();
 
-setInterval(function () {
-  dbConn.query("SELECT CURDATE()", (err, rows) => {
-    if (err) {
-      console.log({ err });
-    }
-    console.log({ date: functions.getDateToday(), rows });
-  });
-}, 3500);
+// setInterval(function () {
+//   dbConn.query("SELECT CURDATE()", (err, rows) => {
+//     if (err) {
+//       console.log({ err });
+//     }
+//     console.log({ date: functions.getDateToday(), rows });
+//   });
+// }, 3500);
