@@ -243,11 +243,11 @@ router.post("/done", (req, res) => {
 });
 
 let testOrderNumber = 0;
-console.log({ testOrderNumber });
+// console.log({ testOrderNumber });
 
 router.post("/order", (req, res) => {
   let data = req.body;
-  console.log((testOrderNumber += 1));
+  // console.log((testOrderNumber += 1));
   console.log("New order: ", { data });
   // let orderNo= bod.orderStatusId === 7 ? getDateToday("FULL-ID") : bod.orderNo;
 
