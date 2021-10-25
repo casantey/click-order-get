@@ -1,63 +1,109 @@
 <section>
-	<div id="login-body">
-		<div id="login">
-			<mat-card class="login-card">
-				<div class="d-flex justify-content-center">
-					<img src="{{imgLoc}}" alt="Casantey Business Solutions Logo" width="100px" height="50px"><!-- img -->
-				</div>
-				<mat-card-content>
-					<form [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)">
-						<mat-form-field class="form-input mt-3" appearance="fill">
-							<mat-label>Username</mat-label>
-							<input placeholder="Username" formControlName="username"
-								aria-describedby="username" matInput autofocus><!-- End MatInput -->
-							<mat-icon matSuffix>person</mat-icon>
-							<mat-error class="d-flex justify-content-end" *ngIf="username!.touched && username!.invalid">
-								This is a required field
-							</mat-error>
-						</mat-form-field>
-						<mat-form-field class="form-input mt-3" appearance="fill">
-							<mat-label>Password</mat-label>
-							<input [type]="hide ? 'password' : 'text'" placeholder="Password"
-								formControlName="password" aria-describedby="password" matInput><!-- End MatInput-->
-							<button type="button" mat-icon-button matSuffix (click)="hide = !hide"
-								[attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
-								<mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-							</button>
-							<mat-error class="d-flex justify-content-end" *ngIf="password!.invalid">
-								<span *ngIf="password!.errors!.minlength || password!.dirty">
-									Password must be at least 4 characters
-								</span>
-								<span *ngIf="password!.touched && password!.pristine">
-									This is a required field
-								</span>
-							</mat-error>
-						</mat-form-field>
-						<div class="form-group mt-3">
-							<div class="d-flex justify-content-center">
-								<button type="submit" color="primary" [disabled]="loginForm.invalid" mat-raised-button>
-									<!-- End button tag head -->
-									Login
-								</button>
-							</div>
-						</div><!-- End form-group -->
-						<mat-progress-bar mode="indeterminate" color="warn" *ngIf="loading"></mat-progress-bar>
-					</form><!-- End form -->
-				</mat-card-content>
-				<div class="error-info" *ngIf="incorrectDetials">
-					<span>Username or Password is incorrect</span>
-				</div>
-				<div class="warn-info" *ngIf="networkError||errorMsg">
-					<span *ngIf="networkError">Please check your network connection and try again.</span>
-					<span *ngIf="errorMsg">{{errorMsg}}</span>
-				</div>
-			</mat-card>
-		</div>
-		<div id="caption">
-			<h1 class="caption-head text-center">BODA Smart City Community Apps Suite</h1>
-			<p class="caption-body text-center">A Casantey Business Solutions Group Initiative</p>
-			<p class="version text-center">{{version}}</p>
-		</div>
-	</div>
-	
+  <div id="login-body">
+    <div id="login">
+      <mat-card class="login-card">
+        <div class="d-flex justify-content-center">
+          <img
+            src="{{ imgLoc }}"
+            alt="Casantey Business Solutions Logo"
+            width="100px"
+            height="50px"
+          /><!-- img -->
+        </div>
+        <mat-card-content>
+          <form [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)">
+            <mat-form-field class="form-input mt-3" appearance="fill">
+              <mat-label>Username</mat-label>
+              <input
+                placeholder="Username"
+                formControlName="username"
+                aria-describedby="username"
+                matInput
+                autofocus
+              /><!-- End MatInput -->
+              <mat-icon matSuffix>person</mat-icon>
+              <mat-error
+                class="d-flex justify-content-end"
+                *ngIf="username!.touched && username!.invalid"
+              >
+                This is a required field
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="form-input mt-3" appearance="fill">
+              <mat-label>Password</mat-label>
+              <input
+                [type]="hide ? 'password' : 'text'"
+                placeholder="Password"
+                formControlName="password"
+                aria-describedby="password"
+                matInput
+              /><!-- End MatInput-->
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="hide = !hide"
+                [attr.aria-label]="'Hide password'"
+                [attr.aria-pressed]="hide"
+              >
+                <mat-icon>{{
+                  hide ? "visibility_off" : "visibility"
+                }}</mat-icon>
+              </button>
+              <mat-error
+                class="d-flex justify-content-end"
+                *ngIf="password!.invalid"
+              >
+                <span *ngIf="password!.errors!.minlength || password!.dirty">
+                  Password must be at least 4 characters
+                </span>
+                <span *ngIf="password!.touched && password!.pristine">
+                  This is a required field
+                </span>
+              </mat-error>
+            </mat-form-field>
+            <div class="form-group mt-3">
+              <div class="d-flex justify-content-center">
+                <button
+                  type="submit"
+                  color="primary"
+                  [disabled]="loginForm.invalid || loading"
+                  mat-raised-button
+                >
+                  <!-- End button tag head -->
+                  Login
+                </button>
+              </div>
+            </div>
+            <!-- End form-group -->
+            <mat-progress-bar
+              mode="indeterminate"
+              color="warn"
+              class="mt-4"
+              *ngIf="loading"
+            ></mat-progress-bar>
+          </form>
+          <!-- End form -->
+        </mat-card-content>
+        <div class="error-info" *ngIf="incorrectDetials">
+          <span>Username or Password is incorrect</span>
+        </div>
+        <div class="warn-info" *ngIf="networkError || errorMsg">
+          <span *ngIf="networkError"
+            >Please check your network connection and try again.</span
+          >
+          <span *ngIf="errorMsg">{{ errorMsg }}</span>
+        </div>
+      </mat-card>
+    </div>
+    <div id="caption">
+      <h1 class="caption-head text-center">
+        BODA Smart City Community Apps Suite
+      </h1>
+      <p class="caption-body text-center">
+        A Casantey Business Solutions Group Initiative
+      </p>
+      <p class="version text-center">{{ version }}</p>
+    </div>
+  </div>
 </section>

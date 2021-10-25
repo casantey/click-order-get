@@ -54,6 +54,7 @@ export class LoginComponent implements OnInit {
 
   login(value: UserData) {
     // console.log(localStorage);
+    this.toast.clear();
     this.loading = true;
     this.incorrectDetials = false;
     this.networkError = false;
@@ -89,13 +90,27 @@ export class LoginComponent implements OnInit {
         }
       },
       (error) => {
-        // console.log(error);
+        // console.log({ error, status: error.status });
         this.incorrectDetials = false;
-        if (error.status === 500) this.networkError = true;
-        else if (error.status === 404)
-          this.errorMsg = 'Could not contact the server, Please try again';
-        else this.networkError = true;
+        switch (error.status) {
+          case 404:
+            this.toast.error(
+              'Username and/or password provided has no record in the system! Kindly check and try again',
+              'Unknown user',
+              { timeOut: 30000, closeButton: true }
+            );
+            this.networkError = false;
+            break;
+          default:
+            this.networkError = true;
+            break;
+        }
+        // if (error.status === 500) this.networkError = true;
+        // else if (error.status === 404)
+        //   this.errorMsg = 'Could not contact the server, Please try again';
+        // else this.networkError = true;
         // this.newForm();
+        this.loading = false;
       },
       () => {
         this.loading = false;
