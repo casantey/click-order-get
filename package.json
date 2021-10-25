@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --port 4300",
+    "start": "node server.js",
+    "serve": "ng serve",
     "build": "ng build",
+    "heroku-postbuild": "ng build --configuration=production",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -34,6 +36,7 @@
     "chartjs-plugin-datalabels": "^0.7.0",
     "core-js": "^3.6.4",
     "dayjs": "^1.10.7",
+    "express": "^4.17.1",
     "file-saver": "^2.0.2",
     "jquery": "^3.6.0",
     "multer": "^1.4.2",
@@ -41,9 +44,11 @@
     "ng2-file-uploader": "^0.1.4",
     "ngx-toastr": "^12.0.0",
     "numeral": "^2.0.6",
+    "path": "^0.12.7",
     "rxjs": "~6.6.0",
     "toastr": "^2.1.4",
     "tslib": "^2.0.0",
+    "typescript": "~4.1.2",
     "uuid": "^8.1.0",
     "xlsx": "^0.17.2",
     "zone.js": "~0.11.3"
@@ -56,6 +61,7 @@
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
+    "enhanced-resolve": "^3.3.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "^6.3.4",
@@ -67,5 +73,9 @@
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~4.1.2"
+  },
+  "engines": {
+    "node": "16.9.1",
+    "npm": "6.14.15"
   }
 }

@@ -10,7 +10,8 @@ export const environment = {
   env: 'lo',
   api: `http://localhost:10484/api-z/`,
   api_1: `https://smartcityapi.bodacommunity.io:8080/api-1/`,
-  _api: `http://localhost:10484`,
+  // _api: `http://localhost:10484`,
+  _api: `https://delivery-db.herokuapp.com`,
 };
 
 /*
