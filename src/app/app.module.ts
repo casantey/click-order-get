@@ -36,6 +36,8 @@ import { AddProductComponent } from './components/dialogs/add-product/add-produc
 import { OrderDetailsComponent } from './pages/orders/order-details/order-details.component';
 import { VendorDetailsComponent } from './pages/vendors/vendor-details/vendor-details.component';
 import { AddAttributeComponent } from './components/dialogs/add-attribute/add-attribute.component';
+import { ApplicationsComponent } from './pages/applications/applications.component';
+import { ApplicationDetailsComponent } from './pages/applications/application-details/application-details.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +60,8 @@ import { AddAttributeComponent } from './components/dialogs/add-attribute/add-at
     OrderDetailsComponent,
     VendorDetailsComponent,
     AddAttributeComponent,
+    ApplicationsComponent,
+    ApplicationDetailsComponent,
   ],
   imports: [
     BrowserModule,

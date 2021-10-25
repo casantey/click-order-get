@@ -6,6 +6,7 @@ import { UserData } from '../interfaces/user-data';
 import { Vendor } from '../interfaces/vendor';
 import { FlavorGroup } from '../interfaces/flavor-group';
 import { Order } from '../interfaces/order';
+import { Application } from '../interfaces/application';
 
 const _api = environment._api;
 
@@ -14,6 +15,33 @@ const _api = environment._api;
 })
 export class DataService {
   constructor(private http: HttpClient) {}
+
+  updateApplication(data: {
+    id: string;
+    reviewedBy: { id: string; name: string };
+    status: string;
+    applicationDetails: Application;
+  }) {
+    return this.http.put<{ data: Application; message: string; error: Object }>(
+      `${_api}/applications/${data.id}`,
+      data,
+      { reportProgress: true, observe: 'events' }
+    );
+  }
+
+  getApplicationDetails(id: string) {
+    return this.http.get<{ data: Application; message: string }>(
+      `${_api}/applications/${id}`,
+      { reportProgress: true, observe: 'events' }
+    );
+  }
+
+  getApplications() {
+    return this.http.get<{ data: Application[]; message: string }>(
+      `${_api}/applications`,
+      { reportProgress: true, observe: 'events' }
+    );
+  }
 
   checkCaseAssignment(id: string) {
     return this.http.get<[]>(`${_api}/orders/assignment/${id}`, {

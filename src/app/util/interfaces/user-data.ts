@@ -15,6 +15,7 @@ export interface UserData {
     instLoc: string;
     inst_head: string;
     inst_head_name: string;
+    user_id: string;
   };
   code: number;
   message: string;

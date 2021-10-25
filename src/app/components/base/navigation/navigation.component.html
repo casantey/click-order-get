@@ -17,7 +17,7 @@
       <button
         class="nav-link"
         (click)="sidenav.toggle()"
-        [disabled]="(page=='/orders')"
+        [disabled]="page == '/orders'"
         routerLink="/orders"
         mat-menu-item
       >
@@ -28,7 +28,7 @@
         class="nav-link"
         (click)="sidenav.toggle()"
         routerLink="/vendors"
-        [disabled]="(page=='/vendors')"
+        [disabled]="page == '/vendors'"
         mat-menu-item
       >
         <mat-icon>store</mat-icon>
@@ -47,11 +47,21 @@
         class="nav-link"
         (click)="sidenav.toggle()"
         routerLink="/products"
-        [disabled]="(page=='/products')"
+        [disabled]="page == '/products'"
         mat-menu-item
       >
         <mat-icon>category</mat-icon>
         Products
+      </button>
+      <button
+        class="nav-link"
+        (click)="sidenav.toggle()"
+        routerLink="/applications"
+        [disabled]="page == '/applications'"
+        mat-menu-item
+      >
+        <mat-icon>approval</mat-icon>
+        Applications
       </button>
       <!-- <button
         class="nav-link"
@@ -115,15 +125,25 @@
         <mat-icon>menu</mat-icon>
         Menu
       </button>
-      <a routerLink="/" matTooltip="Home" *ngIf="!(page=='/orders')">
+      <a routerLink="/" matTooltip="Home" *ngIf="!(page == '/orders')">
         <span class="navbar-brand mb-0 h0">
-          <img src="{{imgLoc}}" alt="boda-logo" width="100px" />
-          <span *ngIf="!(isHandset$ | async)">{{head}}</span>
+          <img src="{{ imgLoc }}" alt="boda-logo" width="100px" />
+          <span *ngIf="!(isHandset$ | async)">{{ head }}</span>
         </span>
       </a>
-      <span class="navbar-brand mb-0 h0 d-flex justify-content-center align-items-center" *ngIf="(page=='/orders')">
-        <img src="{{imgLoc}}" alt="boda-logo" width="100px" />
-        <span class="ml-4" *ngIf="!(isHandset$ | async)">{{head}}</span>
+      <span
+        class="
+          navbar-brand
+          mb-0
+          h0
+          d-flex
+          justify-content-center
+          align-items-center
+        "
+        *ngIf="page == '/orders'"
+      >
+        <img src="{{ imgLoc }}" alt="boda-logo" width="100px" />
+        <span class="ml-4" *ngIf="!(isHandset$ | async)">{{ head }}</span>
       </span>
       <button [matMenuTriggerFor]="navButton" mat-icon-button>
         <mat-icon>more_vert</mat-icon>
@@ -148,9 +168,9 @@
   <button
     class="nav-link"
     (click)="sidenav.toggle()"
-    *ngIf="userType!='Admin' || is_head"
+    *ngIf="userType != 'Admin' || is_head"
     routerLink="/register-admin"
-    [disabled]="page=='/register-admin'"
+    [disabled]="page == '/register-admin'"
     mat-menu-item
   >
     <mat-icon>person_pin</mat-icon>
@@ -160,9 +180,9 @@
   <button
     class="nav-link"
     (click)="sidenav.toggle()"
-    *ngIf="(userType=='Admin')"
+    *ngIf="userType == 'Admin'"
     routerLink="/register-staff"
-    [disabled]="page=='/register-staff'"
+    [disabled]="page == '/register-staff'"
     mat-menu-item
   >
     <mat-icon>supervised_user_circle</mat-icon>
@@ -172,9 +192,9 @@
   <button
     class="nav-link"
     (click)="sidenav.toggle()"
-    *ngIf="!(userType=='Admin')"
+    *ngIf="!(userType == 'Admin')"
     routerLink="/register-user"
-    [disabled]="page=='/register-user'"
+    [disabled]="page == '/register-user'"
     mat-menu-item
   >
     <mat-icon>supervised_user_circle</mat-icon>
@@ -184,8 +204,8 @@
     class="nav-link"
     (click)="sidenav.toggle()"
     routerLink="/register-inst"
-    *ngIf="userType!='Admin' || is_head"
-    [disabled]="page=='/register-inst'"
+    *ngIf="userType != 'Admin' || is_head"
+    [disabled]="page == '/register-inst'"
     mat-menu-item
   >
     <mat-icon>business</mat-icon>

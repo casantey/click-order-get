@@ -1,0 +1,109 @@
+<app-navigation>
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-md">
+          <app-head [head]="{ title: 'Applications' }"> </app-head>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md">
+          <mat-card class="width-700 mx-auto">
+            <mat-card-content>
+              <h2>{{ applicationDetails.applicationNumber }}</h2>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <div class="row">
+                    <div
+                      class="col-md p-4 m-2"
+                      [ngClass]="{
+                        'alert-warning':
+                          applicationDetails.status === 'Pending',
+                        'alert-danger':
+                          applicationDetails.status === 'Rejected',
+                        'alert-success':
+                          applicationDetails.status === 'Approved'
+                      }"
+                      role="alert"
+                    >
+                      <span style="font-size: 1.5rem">
+                        {{ applicationDetails.status }}
+                      </span>
+                      <div *ngIf="applicationDetails.status != 'Pending'">
+                        <p class="mb-0 mt-2 entry">
+                          <strong>Reviewed By:</strong>
+                          <span>
+                            {{
+                              parseObject(applicationDetails.reviewedBy).name
+                            }}
+                          </span>
+                        </p>
+                        <p class="mb-0 entry">
+                          <strong>Review Date:</strong>
+                          <span>
+                            {{ formatDate(applicationDetails.reviewDate) }}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="mb-0 entry">
+                    <strong>Applicant Name</strong>
+                    <span>{{ getName(applicationDetails) }}</span>
+                  </p>
+                  <p
+                    class="mb-0 entry"
+                    *ngIf="applicationDetails.type == 'Rider'"
+                  >
+                    <strong>Applicant Gender</strong>
+                    <span>{{ applicationDetails.gender }}</span>
+                  </p>
+                  <p class="mb-0 entry">
+                    <strong>Contact Phone</strong>
+                    <span>{{ applicationDetails.contactPhone }}</span>
+                  </p>
+                  <p class="mb-0 entry">
+                    <strong>Contact Email</strong>
+                    <span>{{ applicationDetails.contactEmail }}</span>
+                  </p>
+                  <div class="row">
+                    <div class="col-md d-flex justify-content-end">
+                      <span class="date-created">{{
+                        formatDate(applicationDetails.applicationDate)
+                      }}</span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </mat-card-content>
+            <mat-card-actions *ngIf="applicationDetails.status == 'Pending'">
+              <div class="row">
+                <div class="col-md">
+                  <button
+                    color="warn"
+                    (click)="review('Rejected')"
+                    mat-stroked-button
+                  >
+                    <mat-icon>cancel</mat-icon>
+                    <span>Reject</span>
+                  </button>
+                </div>
+                <div class="col-md">
+                  <button
+                    color="primary"
+                    (click)="review('Approved')"
+                    mat-stroked-button
+                  >
+                    <mat-icon>how_to_reg</mat-icon>
+                    <span>Approve</span>
+                  </button>
+                </div>
+              </div>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </section>
+</app-navigation>

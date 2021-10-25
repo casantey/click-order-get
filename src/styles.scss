@@ -74,6 +74,11 @@ app-head {
     margin-right: 1rem;
   }
 }
+mat-card-actions.mat-card-actions {
+  button {
+    width: 100%;
+  }
+}
 
 .date-created {
   font-size: 12px;
@@ -87,8 +92,8 @@ app-head {
   strong {
     margin-bottom: 0;
     font-size: 12px;
-    text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: 700;
   }
 }
 .h0 {
@@ -142,10 +147,10 @@ app-head {
 }
 
 .width-500 {
-  width: 500px;
+  max-width: 500px;
 }
 .width-700 {
-  width: 700px;
+  max-width: 700px;
 }
 
 .table-foot {
