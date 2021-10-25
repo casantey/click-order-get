@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node server.js",
-    "serve": "ng serve --port 4301",
+    "serve": "ng serve",
     "build": "ng build",
     "heroku-postbuild": "ng build --configuration=production",
     "test": "ng test",
