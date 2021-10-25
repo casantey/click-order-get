@@ -7,7 +7,7 @@ export interface Order {
   itemName: string;
   itemPrice: number;
   itemFlavors: string;
-  item_quantity: number;
+  itemQuantity: number;
   deliveryAddress: string;
   dateCreated: string;
   orderLong: number;
@@ -20,6 +20,6 @@ export interface Order {
   institution?: string;
   place?: string;
   region?: string;
-  delivery_agent?: string;
-  delivery_agent_name?: string;
+  deliveryAgent?: string;
+  deliveryAgentName?: string;
 }

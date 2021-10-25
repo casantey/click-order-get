@@ -4,12 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "node server.js",
-    "serve": "ng serve",
+    "serve": "ng serve --port 4301",
     "build": "ng build",
     "heroku-postbuild": "ng build --configuration=production",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "commit": "git add . && git commit -m 'new update' && git push && git push heroku HEAD:master"
   },
   "private": true,
   "dependencies": {

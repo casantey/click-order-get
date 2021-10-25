@@ -1,35 +1,35 @@
-import { HttpEventType } from "@angular/common/http";
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
-import { Order } from "src/app/util/interfaces/order";
-import { DataService } from "src/app/util/service/data.service";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatDialog } from "@angular/material/dialog";
-import { MapComponent } from "src/app/components/dialogs/map/map.component";
+import { HttpEventType } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { Order } from 'src/app/util/interfaces/order';
+import { DataService } from 'src/app/util/service/data.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatDialog } from '@angular/material/dialog';
+import { MapComponent } from 'src/app/components/dialogs/map/map.component';
 
 @Component({
-  selector: "app-orders",
-  templateUrl: "./orders.component.html",
-  styleUrls: ["./orders.component.scss"],
+  selector: 'app-orders',
+  templateUrl: './orders.component.html',
+  styleUrls: ['./orders.component.scss'],
 })
 export class OrdersComponent implements OnInit {
-  selectedReport: string = sessionStorage.getItem("selectedReport") ?? "1";
-  timePeriod: string = sessionStorage.getItem("timePeriod") ?? "today";
+  selectedReport: string = sessionStorage.getItem('selectedReport') ?? '1';
+  timePeriod: string = sessionStorage.getItem('timePeriod') ?? 'today';
   loading: boolean;
   orders: Order[];
   emptyTable: boolean = true;
   displayedColumns: string[] = [
-    "orderNo",
-    "dateCreated",
-    "itemCategory",
-    "itemName",
+    'orderNo',
+    'dateCreated',
+    'itemCategory',
+    'itemName',
     // "recipient",
-    "item_quantity",
-    "phone",
-    "orderStatus",
-    "action",
+    'itemQuantity',
+    'phone',
+    'orderStatus',
+    'action',
   ];
   dataSource: MatTableDataSource<Order>;
 
@@ -45,9 +45,9 @@ export class OrdersComponent implements OnInit {
   ngOnInit(): void {}
 
   getOrders() {
-    this.toast.info("Getting orders");
-    sessionStorage.setItem("timePeriod", this.timePeriod);
-    sessionStorage.setItem("selectedReport", this.selectedReport);
+    this.toast.info('Getting orders');
+    sessionStorage.setItem('timePeriod', this.timePeriod);
+    sessionStorage.setItem('selectedReport', this.selectedReport);
     this.loading = true;
     let bod = {
       report: this.selectedReport,
@@ -64,7 +64,7 @@ export class OrdersComponent implements OnInit {
         }
       },
       (error) => {
-        this.toast.error("Could not get vendors...");
+        this.toast.error('Could not get vendors...');
         console.log({ error });
       },
       () => {

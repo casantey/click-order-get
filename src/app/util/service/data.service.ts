@@ -16,6 +16,13 @@ const _api = environment._api;
 export class DataService {
   constructor(private http: HttpClient) {}
 
+  assignOrder(data: { agent: string; orderNo: string }) {
+    return this.http.put<Order>(`${_api}/orders/assign/${data.orderNo}`, data, {
+      reportProgress: true,
+      observe: 'events',
+    });
+  }
+
   updateApplication(data: {
     id: string;
     reviewedBy: { id: string; name: string };

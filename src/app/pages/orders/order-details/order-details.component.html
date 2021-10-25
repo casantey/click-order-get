@@ -63,7 +63,7 @@
               </div>
               <div class="entry">
                 <strong>Item Quantity: </strong>
-                <span>{{ order.item_quantity }}</span>
+                <span>{{ order.itemQuantity }}</span>
               </div>
               <div class="entry">
                 <!-- <strong>Flavours: </strong> -->
@@ -87,15 +87,18 @@
               <!-- <div class="page-head-note" *ngIf="order.orderStatusId==3 && userType==='Kitchen'">
                 <span>Order ready for delivery.</span>
               </div> -->
-              <div class="page-head-note" *ngIf="order.orderStatusId > 3">
+              <div class="warn-info mt-4" *ngIf="order.orderStatusId > 3">
                 <span
                   >Order assigned to
-                  <strong>{{ order.delivery_agent }}</strong> for
+                  <strong>{{ order.deliveryAgentName }}</strong> for
                   delivery.</span
                 >
               </div>
             </mat-card-content>
             <mat-card-actions *ngIf="order.orderStatusId < 4">
+              <button color="primary" (click)="assign()" mat-raised-button>
+                Assign
+              </button>
               <!-- <div class="entry" *ngIf="userType==='Admin'">
                 <mat-form-field appearance="fill" style="width: 100%;">
                   <mat-label>{{'CARD.assignTo' | translate}}</mat-label>

@@ -1,21 +1,21 @@
-import { HttpEventType } from "@angular/common/http";
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
-import { ToastrService } from "ngx-toastr";
-import { DataService } from "src/app/util/service/data.service";
-import { Order } from "src/app/util/interfaces/order";
+import { HttpEventType } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { DataService } from 'src/app/util/service/data.service';
+import { Order } from 'src/app/util/interfaces/order';
 
 @Component({
-  selector: "app-order-details",
-  templateUrl: "./order-details.component.html",
-  styleUrls: ["./order-details.component.scss"],
+  selector: 'app-order-details',
+  templateUrl: './order-details.component.html',
+  styleUrls: ['./order-details.component.scss'],
 })
 export class OrderDetailsComponent implements OnInit {
-  orderNo: string = this.route.snapshot.params["id"];
+  orderNo: string = this.route.snapshot.params['id'];
   loading: boolean = true;
   order: Order;
   flavors: [];
-  @ViewChild("gmap", { static: true })
+  @ViewChild('gmap', { static: true })
   gmapElement: any;
   map: google.maps.Map;
   marker: google.maps.Marker;
@@ -38,11 +38,11 @@ export class OrderDetailsComponent implements OnInit {
         if (data.type == HttpEventType.Response) {
           this.loading = false;
           // console.log(data.body);
-          if (data.body["code"]) {
+          if (data.body['code']) {
             // this.openErrorSnackBar("There was an issue getting data; Please contact the system's administrator");
             this.toast.warning(
-              "Could not find details for selected case",
-              "Error",
+              'Could not find details for selected case',
+              'Error',
               {
                 closeButton: true,
                 timeOut: 15000,
@@ -64,7 +64,7 @@ export class OrderDetailsComponent implements OnInit {
       },
       (error) => {
         this.toast.error(
-          "There was an error; Please contact the Administrator!"
+          'There was an error; Please contact the Administrator!'
         );
         console.log(error);
       },
@@ -72,6 +72,52 @@ export class OrderDetailsComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  assign() {
+    this.loading = true;
+    this._data
+      .assignOrder({ agent: 'PBADD001', orderNo: this.orderNo })
+      .subscribe(
+        (data) => {
+          if (data.type == HttpEventType.Response) {
+            this.loading = false;
+            // console.log(data.body);
+            if (data.body['code']) {
+              // this.openErrorSnackBar("There was an issue getting data; Please contact the system's administrator");
+              this.toast.warning(
+                'Could not find details for selected case',
+                'Error',
+                {
+                  closeButton: true,
+                  timeOut: 15000,
+                }
+              );
+              return console.log(data.body);
+            }
+            this.toast.success('Order assigned');
+
+            this.order = data.body;
+
+            // this.itemFlavor = this.getFlavors(this.order);
+            // if (this.order.orderStatusId > 2)
+            // 	this.delivery_agent = this.data.delivery_agent_name;
+            // this.checkCaseAssignment(id);
+            this.setMap(data.body.orderLong, data.body.orderLat);
+            // this.getCurrentStatus();
+            // this.patientCheck();
+          }
+        },
+        (error) => {
+          this.toast.error(
+            'There was an error; Please contact the Administrator!'
+          );
+          console.log(error);
+        },
+        () => {
+          this.loading = false;
+        }
+      );
   }
 
   /*

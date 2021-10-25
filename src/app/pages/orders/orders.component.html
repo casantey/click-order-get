@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col">
-          <app-head [head]="{title:'Orders'}"> </app-head>
+          <app-head [head]="{ title: 'Orders' }"> </app-head>
         </div>
       </div>
 
@@ -77,7 +77,7 @@
                   <mat-label>Search</mat-label>
                   <input
                     matInput
-                    [disabled]="loading||emptyTable"
+                    [disabled]="loading || emptyTable"
                     (keyup)="applyFilter($event)"
                     placeholder="Search for vendor"
                     #input
@@ -99,29 +99,31 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
                       Order Number
                     </th>
-                    <td mat-cell *matCellDef="let row">{{row.orderNo}}</td>
+                    <td mat-cell *matCellDef="let row">{{ row.orderNo }}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="itemCategory">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
                       Item Category
                     </th>
-                    <td mat-cell *matCellDef="let row">{{row.itemCategory}}</td>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.itemCategory }}
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="itemName">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
                       Item Name
                     </th>
-                    <td mat-cell *matCellDef="let row">{{row.itemName}}</td>
+                    <td mat-cell *matCellDef="let row">{{ row.itemName }}</td>
                   </ng-container>
 
-                  <ng-container matColumnDef="item_quantity">
+                  <ng-container matColumnDef="itemQuantity">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
                       Item Quantity
                     </th>
                     <td mat-cell class="text-right" *matCellDef="let row">
-                      {{row.item_quantity}}
+                      {{ row.itemQuantity }}
                     </td>
                   </ng-container>
 
@@ -129,14 +131,16 @@
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
                       Phone Number
                     </th>
-                    <td mat-cell *matCellDef="let row">{{row.phone}}</td>
+                    <td mat-cell *matCellDef="let row">{{ row.phone }}</td>
                   </ng-container>
 
                   <ng-container matColumnDef="orderStatus">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>
                       Order Status
                     </th>
-                    <td mat-cell *matCellDef="let row">{{row.orderStatus}}</td>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.orderStatus }}
+                    </td>
                   </ng-container>
 
                   <ng-container matColumnDef="dateCreated">
@@ -144,7 +148,7 @@
                       Order Date
                     </th>
                     <td mat-cell *matCellDef="let row">
-                      {{row.dateCreated | date: "MMMM dd, YYYY"}}
+                      {{ row.dateCreated | date: "MMMM dd, YYYY" }}
                     </td>
                   </ng-container>
 
@@ -168,7 +172,7 @@
                       </button>
                       <mat-menu #tableMenu="matMenu">
                         <button
-                          routerLink="/orders/{{element.orderNo}}"
+                          routerLink="/orders/{{ element.orderNo }}"
                           matTooltip="View Details"
                           mat-menu-item
                         >
@@ -177,7 +181,7 @@
                         </button>
                         <button
                           (click)="viewMap(element.orderLat, element.orderLong)"
-                          [disabled]="element.orderLong===0"
+                          [disabled]="element.orderLong === 0"
                           mat-menu-item
                         >
                           <mat-icon>pin_drop</mat-icon>
@@ -197,7 +201,7 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                   <tr
                     mat-row
-                    *matRowDef="let row; columns: displayedColumns;"
+                    *matRowDef="let row; columns: displayedColumns"
                   ></tr>
 
                   <!-- Row shown when there is no matching data. -->
