@@ -78,6 +78,58 @@ router.get("/phone/:phone", (req, res) => {
   );
 });
 
+router.get("/assigned/agent/:id", (req, res) => {
+  let agent = req.params.id;
+  console.log("getting orders assigned to: ", agent);
+
+  dbConn.query(
+    "SELECT a.*, b.orderStatus,b.orderStatusId FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId WHERE deliveryAgent=TRIM(?)",
+    [agent],
+    (error, rows) => {
+      if (error) {
+        // WHEN THERE IS AN ERROR
+        saveError(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not get order(s)" });
+      }
+      if (rows.length == 0) {
+        let msg = "Agent has not been assigned any orders";
+        console.log(msg);
+        return res.status(404).send({ data: rows, message: msg });
+      }
+      async.map(rows, getVendorDetails, (error, response) => {
+        if (error) {
+          saveError(error);
+          return res
+            .status(500)
+            .send({ error, message: "Could not get vendor details" });
+        }
+        async.map(response, getProductDetails, (error, response) => {
+          if (error) {
+            saveError(error);
+            return res
+              .status(500)
+              .send({ error, message: "Could not get product details" });
+          }
+          return res.status(200).send({
+            data: response,
+            message: "Here are the orders you have been assigned",
+          });
+        });
+      });
+    }
+  );
+
+  // dbConn.query("SELECT * FROM orders WHERE deliveryAgent=TRIM(?)",[agent],(error,rows)=>{
+  //   if(error){
+  //     saveError(error)
+  //     return res.status(400).send({error,message:"Could not complete action"})
+  //   }
+  //   return
+  // })
+});
+
 router.get("/today", verifyToken, (req, res) => {
   // console.log("here");
   // console.log(req.payload);
@@ -121,7 +173,7 @@ router.get("/order/:id", verifyToken, (req, res) => {
   console.log("Getting order details...", { id });
 
   dbConn.query(
-    `SELECT a.*,DATE_FORMAT(a.dateCreated, "%Y-%m-%d %H:%i:%s") date_time,b.orderStatusId, c.Fullname deliveryAgent_name,b.orderStatus orderStatus FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId LEFT JOIN web_user c ON a.deliveryAgent=c.user_id WHERE a.orderNo=TRIM(?) ORDER BY dateCreated DESC`,
+    `SELECT a.*,DATE_FORMAT(a.dateCreated, "%Y-%m-%d %H:%i:%s") date_time,b.orderStatusId, c.Fullname deliveryAgentName,b.orderStatus orderStatus FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId LEFT JOIN web_user c ON a.deliveryAgent=c.user_id WHERE a.orderNo=TRIM(?) ORDER BY dateCreated DESC`,
     [req.params.id],
     (error, rows) => {
       if (error) {
@@ -135,6 +187,39 @@ router.get("/order/:id", verifyToken, (req, res) => {
     }
   );
 }); //END SERVE
+
+router.put("/assign/:id", (req, res) => {
+  let assign = req.body;
+  let orderNo = req.params.id;
+  dbConn.query(
+    'UPDATE orders SET orderStatus="4", deliveryAgent=TRIM(?) WHERE orderNo=TRIM(?)',
+    [assign.agent, orderNo],
+    (error, rows) => {
+      if (error) {
+        saveError(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not assign order to delivery rider" });
+      }
+      console.log("Getting order details...", { orderNo });
+
+      dbConn.query(
+        `SELECT a.*,DATE_FORMAT(a.dateCreated, "%Y-%m-%d %H:%i:%s") date_time,b.orderStatusId, c.Fullname deliveryAgentName,b.orderStatus orderStatus FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId LEFT JOIN web_user c ON a.deliveryAgent=c.user_id WHERE a.orderNo=TRIM(?) ORDER BY dateCreated DESC`,
+        [orderNo],
+        (error, rows) => {
+          if (error) {
+            //when there is an error
+            saveError(error);
+            return res
+              .status(400)
+              .send({ error, message: "Could not complete Action" });
+          }
+          return res.send(rows[0]);
+        }
+      );
+    }
+  );
+});
 
 /** ASSIGN CASE */
 router.post("/assign", verifyToken, (req, res) => {
@@ -226,10 +311,11 @@ router.post("/assign", verifyToken, (req, res) => {
   );
 }); //END SERVE
 
-router.post("/done", (req, res) => {
+router.put("/done/:id", (req, res) => {
+  let orderNo = req.params.id;
   dbConn.query(
     "UPDATE orders SET orderStatus='3' WHERE orderNo=TRIM(?)",
-    [req.body.orderNo],
+    [orderNo],
     (error, rows) => {
       if (error) {
         // WHEN THERE IS AN ERROR
@@ -381,6 +467,10 @@ router.post("/", verifyToken, (req, res) => {
     // WHEN THERE IS NO ERROR
     res.send(rows);
   });
+});
+
+router.get("/", (req, res) => {
+  return res.send("Orders endpoint");
 });
 
 router.delete("/:id", (req, res) => {

@@ -4,8 +4,8 @@
   "description": "API service for CBSG's Restaurant delivery application.",
   "main": "index.js",
   "scripts": {
-    "start1": "nodemon index.js",
-    "start": "npm i -g pm2 && pm2 start index.js && pm2 log"
+    "start": "pm2 stop index.js && nodemon index.js",
+    "start1": "npm i -g pm2 && pm2 start index.js && pm2 log"
   },
   "repository": {
     "type": "git",
