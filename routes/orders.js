@@ -423,8 +423,8 @@ router.post("/", verifyToken, (req, res) => {
   let bod = req.body;
   console.log("Getting orders...", { bod });
   let q = `SELECT a.*, b.orderStatus,b.orderStatusId FROM orders a INNER JOIN order_status_types b ON a.orderStatus=b.orderStatusId WHERE a.orderStatus<>7`;
-  if (req.payload.userType != "Super Admin")
-    q += ` AND institution=TRIM("${req.payload.instCode}")`;
+  // if (req.payload.userType != "Super Admin")
+  //   q += ` AND institution=TRIM("${req.payload.instCode}")`;
   if (bod.report == "2") {
     q += ` AND a.orderStatus=6 `;
   }
