@@ -84,8 +84,11 @@ router.put("/:id", (req, res) => {
           }
           if (data.status == "Approved") {
             let pin = "1234";
+            let staff = rows[0];
+            let staffInsert = `INSERT INTO staff (ID,Surname,Firstname,middleName,email,Gender,Age,Phone,Picture) VALUES (TRIM("${staff.applicationNumber}"),TRIM("${staff.applicantLastName}"),TRIM("${staff.applicantFirstName}"),TRIM("${staff.applicantMiddlename}"),TRIM("${staff.contactEmail}"),TRIM("${staff.gender}"),YEAR(CURDATE())-YEAR("${staff.dateOfBirth}"),TRIM("${staff.contactPhone}"),TRIM("${staff.image}}"));`;
             dbConn.query(
-              `INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
+              staffInsert +
+                `INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
               [
                 data.applicationDetails.contactEmail,
                 pin,

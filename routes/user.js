@@ -11,6 +11,23 @@ var success = {
   msg: "Action completed successfully!",
 };
 
+router.get("/agent/:id", (req, res) => {
+  let data = {
+    riderEmail: "johndoe@gmail.com",
+    riderUsername: "johndoe",
+    latitude: 5.6565,
+    longitude: -0.5565,
+    dateJoined: "26-05.2021",
+    riderPhone: "0244444444",
+    dashboard: {
+      hoursOnline: 12,
+      TotalDistanceCovered: 97,
+      acceptedRequest: 6,
+      declinedRequest: 2,
+    },
+  };
+});
+
 /** AUTHENTICATE WEB USER */
 router.post("/authenticate", (req, res) => {
   let body = req.body;
@@ -38,7 +55,7 @@ router.post("/authenticate", (req, res) => {
     req.connection.socket.remoteAddress;
   // console.log({ip});
   dbConn.query(
-    `SELECT a.Username username, a.Fullname fullname, b.inst_head, a.user_id, d.Phone, c.InstitutionName inst_head_name, b.InstitutionCode instCode, b.districtcapital instLoc, a.UserType userType, a.InstitutionName institutionName, b.Country country, d.Picture, b.is_head, b.Category FROM web_user a INNER JOIN institution b ON a.InstitutionName=b.InstitutionName LEFT JOIN institution c ON b.inst_head=c.InstitutionCode LEFT JOIN staff d ON a.user_id=d.ID WHERE a.Username=TRIM(?) AND a.Password=TRIM(?)`,
+    `SELECT a.Username username, a.Fullname fullname, b.inst_head, a.user_id, d.Phone phone, c.InstitutionName inst_head_name, b.InstitutionCode instCode, b.districtcapital instLoc, a.UserType userType, a.InstitutionName institutionName, b.Country country, d.Picture picture, b.is_head, b.Category FROM web_user a INNER JOIN institution b ON a.InstitutionName=b.InstitutionName LEFT JOIN institution c ON b.inst_head=c.InstitutionCode LEFT JOIN staff d ON a.user_id=d.ID WHERE a.Username=TRIM(?) AND a.Password=TRIM(?)`,
     [req.body.username, req.body.password],
     (error, rows) => {
       if (!error) {
