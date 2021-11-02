@@ -30,7 +30,7 @@ router.get("/agent/:id", (req, res) => {
         riderPhone: staff.Phone,
         dashboard: {
           hoursOnline: staff.hoursOnline,
-          TotalDistanceCovered: staff.totalDistanceCovered,
+          totalDistanceCovered: staff.totalDistanceCovered,
           acceptedRequest: staff.acceptedRequest,
           declinedRequest: staff.declinedRequest,
         },
@@ -96,7 +96,7 @@ router.put("/agent/:id", (req, res) => {
               riderPhone: staff.Phone,
               dashboard: {
                 hoursOnline: staff.hoursOnline,
-                TotalDistanceCovered: staff.totalDistanceCovered,
+                totalDistanceCovered: staff.totalDistanceCovered,
                 acceptedRequest: staff.acceptedRequest,
                 declinedRequest: staff.declinedRequest,
               },
