@@ -4,8 +4,8 @@
   "description": "API service for CBSG's Restaurant delivery application.",
   "main": "index.js",
   "scripts": {
-    "start1": "nodemon index.js",
-    "start": "npm i -g pm2 && pm2 start index.js && pm2 log",
+    "start": "nodemon index.js",
+    "start1": "npm i -g pm2 && pm2 start index.js && pm2 log",
     "commit": "git add . && git commit -m 'new update' && git push && git push heroku HEAD:master"
   },
   "repository": {

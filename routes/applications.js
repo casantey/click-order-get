@@ -83,12 +83,22 @@ router.put("/:id", (req, res) => {
             return res.status(400).send({ error });
           }
           if (data.status == "Approved") {
+            let userData = rows[0];
             let pin = "1234";
             let staff = rows[0];
-            let staffInsert = `INSERT INTO staff (ID,Surname,Firstname,middleName,email,Gender,Age,Phone,Picture) VALUES (TRIM("${staff.applicationNumber}"),TRIM("${staff.applicantLastName}"),TRIM("${staff.applicantFirstName}"),TRIM("${staff.applicantMiddlename}"),TRIM("${staff.contactEmail}"),TRIM("${staff.gender}"),YEAR(CURDATE())-YEAR("${staff.dateOfBirth}"),TRIM("${staff.contactPhone}"),TRIM("${staff.image}}"));`;
+            let staffInsert = `INSERT INTO staff (ID,Surname,Firstname,middleName,email,Gender,Age,Phone,Picture) VALUES (TRIM("${
+              staff.applicationNumber
+            }"),TRIM("${staff.applicantLastName}"),TRIM("${
+              staff.applicantFirstName
+            }"),TRIM("${
+              staff.applicantMiddlename ? staff.applicantMiddlename : ""
+            }"),TRIM("${staff.contactEmail}"),TRIM("${
+              staff.gender
+            }"),YEAR(CURDATE())-YEAR("${staff.dateOfBirth}"),TRIM("${
+              staff.contactPhone
+            }"),TRIM("${staff.image}"));`;
             dbConn.query(
-              staffInsert +
-                `INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
+              `INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
               [
                 data.applicationDetails.contactEmail,
                 pin,
@@ -104,16 +114,31 @@ router.put("/:id", (req, res) => {
               (error, rows) => {
                 if (error) {
                   // WHEN THERE IS AN ERROR
-                  return saveError(error);
-                  // return res.status(400).send({error,message:"Could not complete Action"});
+                  saveError(error);
+                  return res
+                    .status(400)
+                    .send({ error, message: "Could not complete Action" });
                 }
                 console.log("User login details created");
+                dbConn.query(staffInsert, (error, rows) => {
+                  if (error) {
+                    saveError(error);
+                    return res
+                      .status(400)
+                      .send({ error, message: "Could not complete Action" });
+                  }
+                  console.log("Staff details created");
+                  return res.send({
+                    data: userData,
+                    message: "Application status updated",
+                  });
+                });
               }
             );
-          }
-          return res
-            .status(200)
-            .send({ data: rows[0], message: "Application status updated" });
+          } else
+            return res
+              .status(200)
+              .send({ data: rows[0], message: "Application status updated" });
         }
       );
     }
