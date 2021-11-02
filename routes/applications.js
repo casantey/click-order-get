@@ -64,8 +64,19 @@ router.put("/:id", (req, res) => {
   console.log("Application reviewed...", { id, data });
 
   dbConn.query(
-    "UPDATE applications SET status=TRIM(?), reviewedBy=TRIM(?), reviewDate=NOW() WHERE id=TRIM(?)",
-    [data.status, JSON.stringify(data.reviewedBy), id],
+    `INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
+    [
+      data.applicationDetails.contactEmail,
+      pin,
+      data.applicationDetails.applicantName,
+      data.applicationDetails.type,
+      data.applicationDetails.type == "Rider"
+        ? "Independent"
+        : data.applicationDetails.vendorName,
+      data.reviewedBy.name,
+      data.applicationDetails.country,
+      data.applicationDetails.applicationNumber,
+    ],
     (error, rows) => {
       if (error) {
         saveError(error);
@@ -98,19 +109,8 @@ router.put("/:id", (req, res) => {
               staff.contactPhone
             }"),TRIM("${staff.image}"));`;
             dbConn.query(
-              `INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
-              [
-                data.applicationDetails.contactEmail,
-                pin,
-                data.applicationDetails.applicantName,
-                data.applicationDetails.type,
-                data.applicationDetails.type == "Rider"
-                  ? "Independent"
-                  : data.applicationDetails.vendorName,
-                data.reviewedBy.name,
-                data.applicationDetails.country,
-                data.applicationDetails.applicationNumber,
-              ],
+              "UPDATE applications SET status=TRIM(?), reviewedBy=TRIM(?), reviewDate=NOW() WHERE id=TRIM(?)",
+              [data.status, JSON.stringify(data.reviewedBy), id],
               (error, rows) => {
                 if (error) {
                   // WHEN THERE IS AN ERROR
