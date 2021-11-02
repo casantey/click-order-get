@@ -62,6 +62,7 @@ router.put("/:id", (req, res) => {
   let id = req.params.id;
   let data = req.body;
   console.log("Application reviewed...", { id, data });
+  let pin = "1234";
 
   dbConn.query(
     `INSERT INTO web_user (Username, Password, Fullname, UserType, InstitutionName, CreatedBy,country, user_id, DateCreated) VALUES (TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),TRIM(?),CURDATE())`,
@@ -95,7 +96,6 @@ router.put("/:id", (req, res) => {
           }
           if (data.status == "Approved") {
             let userData = rows[0];
-            let pin = "1234";
             let staff = rows[0];
             let staffInsert = `INSERT INTO staff (ID,Surname,Firstname,middleName,email,Gender,Age,Phone,Picture) VALUES (TRIM("${
               staff.applicationNumber
