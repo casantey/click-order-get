@@ -12,20 +12,101 @@ var success = {
 };
 
 router.get("/agent/:id", (req, res) => {
-  let data = {
-    riderEmail: "johndoe@gmail.com",
-    riderUsername: "johndoe",
-    latitude: 5.6565,
-    longitude: -0.5565,
-    dateJoined: "26-05.2021",
-    riderPhone: "0244444444",
-    dashboard: {
-      hoursOnline: 12,
-      TotalDistanceCovered: 97,
-      acceptedRequest: 6,
-      declinedRequest: 2,
-    },
-  };
+  let id = req.params.id;
+  console.log("getting agent dasboard details...", { id });
+  dbConn.query("SELECT * FROM staff WHERE ID=TRIM(?)", [id], (error, rows) => {
+    if (error) {
+      saveError(error);
+      return res
+        .status(500)
+        .send({ error, message: "Could not complete action." });
+    }
+    let staff = rows[0];
+    return res.status(200).send({
+      data: {
+        riderEmail: staff.email,
+        riderUsername: staff.email,
+        dateJoined: staff.dateCreated,
+        riderPhone: staff.Phone,
+        dashboard: {
+          hoursOnline: staff.hoursOnline,
+          TotalDistanceCovered: staff.totalDistanceCovered,
+          acceptedRequest: staff.acceptedRequest,
+          declinedRequest: staff.declinedRequest,
+        },
+      },
+      message: "Details updated",
+    });
+  });
+  // let data = {
+  //   riderEmail: "johndoe@gmail.com",
+  //   riderUsername: "johndoe",
+  //   latitude: 5.6565,
+  //   longitude: -0.5565,
+  //   dateJoined: "26-05.2021",
+  //   riderPhone: "0244444444",
+  //   dashboard: {
+  //     hoursOnline: 12,
+  //     TotalDistanceCovered: 97,
+  //     acceptedRequest: 6,
+  //     declinedRequest: 2,
+  //   },
+  // };
+});
+
+router.put("/agent/:id", (req, res) => {
+  let body = req.body;
+  let id = req.params.id;
+
+  console.log("updating agent details...", { id, body });
+
+  dbConn.query(
+    "UPDATE staff SET declinedRequest=?,hoursOnline=?,totalDistanceCovered=?,acceptedRequest=? WHERE ID=TRIM(?)",
+    [
+      parseInt(body.declinedRequest),
+      parseInt(body.hoursOnline),
+      parseInt(body.totalDistanceCovered),
+      parseInt(body.acceptedRequest),
+      id,
+    ],
+    (error, rows) => {
+      if (error) {
+        saveError(error);
+        return res
+          .status(400)
+          .send({ error, message: "Could not update rider details" });
+      }
+      console.log("agent details updated");
+      dbConn.query(
+        "SELECT * FROM staff WHERE ID=TRIM(?)",
+        [id],
+        (error, rows) => {
+          if (error) {
+            saveError(error);
+            return res
+              .status(500)
+              .send({ error, message: "Could not complete action." });
+          }
+          let staff = rows[0];
+          return res.status(200).send({
+            data: {
+              riderEmail: staff.email,
+              riderUsername: staff.email,
+              dateJoined: staff.dateCreated,
+              riderPhone: staff.Phone,
+              dashboard: {
+                hoursOnline: staff.hoursOnline,
+                TotalDistanceCovered: staff.totalDistanceCovered,
+                acceptedRequest: staff.acceptedRequest,
+                declinedRequest: staff.declinedRequest,
+              },
+            },
+            message: "Details updated",
+          });
+        }
+      );
+    }
+  );
 });
 
 /** AUTHENTICATE WEB USER */
